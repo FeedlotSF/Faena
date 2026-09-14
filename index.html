@@ -537,7 +537,7 @@ a{color:var(--blood);}
   <div class="modal">
     <h3>Token de GitHub para sincronizar</h3>
     <div class="infobox mb16" style="background:#FBE9E7;border-left-color:var(--blood);">
-      Creá un <strong>fine-grained personal access token</strong> en GitHub (tu foto → <strong>Settings → Developer settings → Personal access tokens → Fine-grained tokens</strong>) con permiso <strong>Contents: Read and write</strong> solo sobre el repo <strong>FeedlotSF/Faena</strong>. Pegalo acá abajo. Se guarda <strong>solo en este navegador</strong> (nunca se sube al repo).
+      Creá un <strong>fine-grained personal access token</strong> en GitHub (tu foto → <strong>Settings → Developer settings → Personal access tokens → Fine-grained tokens</strong>). En <strong>Repository access</strong> elegí <em>Only select repositories</em> y seleccioná <strong>FeedlotSF/Faena</strong>. Después en <strong>Repository permissions</strong> buscá <strong>Contents</strong> y ponelo en <strong>Read and write</strong>. Pegalo acá abajo. Se guarda <strong>solo en este navegador</strong> (nunca se sube al repo).
     </div>
     <div class="field">
       <label for="inpToken">Token</label>
@@ -2318,7 +2318,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
         const meta = await resGet.json();
         sha = meta.sha;
       }else if(resGet.status !== 404){
-        throw new Error('GET ' + resGet.status + ' — revisá el token y su permiso (Contents: Read and write).');
+        throw new Error('GET ' + resGet.status + ' — verificá que el token tenga Contents en "Read and write" y acceso a este repo.');
       }
       const payload = {
         message: 'Sincronizar datos del panel (romaneo)',
