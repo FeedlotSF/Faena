@@ -1081,7 +1081,18 @@ function renderResumen(ventas){
 
   // últimas 6 ventas ordenadas por fecha para evolución
   const ordenadas = [...allStats].sort((a,b)=> new Date(a.venta.fecha) - new Date(b.venta.fecha));
-  const ultimas = ordenadas.slice(-8);
+  const ultimas = ordenadas.slice(-6);
+
+  // etiqueta de 2 líneas: fecha corta arriba (21-jul), frigorífico abajo
+  function etiquetaEvolucion(venta){
+    const fc = fmtFechaCorta(venta.fecha);
+    const dia = parseInt(fc.dia,10);
+    const mes = (fc.mes || '').toLowerCase();
+    const frigo = venta.frigorifico || 's/f';
+    const corto = frigo.length > 12 ? frigo.slice(0,11) + '…' : frigo;
+    return [dia + '-' + mes, corto];
+  }
+  const etiquetasEvol = ultimas.map(x=> etiquetaEvolucion(x.venta));
 
   el.innerHTML = `
     <div class="grid grid-4 mb16">
@@ -1110,7 +1121,7 @@ function renderResumen(ventas){
     <div class="grid grid-2">
       <div class="card">
         <div class="card-head"><div><h3>Evolución del índice de calidad</h3><p class="muted small">Últimas ${ultimas.length} ventas, en orden cronológico</p></div></div>
-        <div class="chart-box"><canvas id="chartEvolCalidad"></canvas></div>
+        <div class="chart-box tall"><canvas id="chartEvolCalidad"></canvas></div>
       </div>
       <div class="card">
         <div class="card-head"><div><h3>Composición global de tipificación</h3><p class="muted small">Todas las ventas cargadas, por letra</p></div></div>
@@ -1135,7 +1146,7 @@ function renderResumen(ventas){
   chartInstances['evolCalidad'] = new Chart(ctx1, {
     type:'line',
     data:{
-      labels: ultimas.map(x=> fmtFecha(x.venta.fecha) + (x.venta.frigorifico? ' · '+x.venta.frigorifico:'')),
+      labels: etiquetasEvol,
       datasets:[{
         label:'Índice de calidad (0-100)',
         data: ultimas.map(x=> calcularIndiceCalidad(x.stats.distLetra, x.stats.nMedias)),
@@ -1149,7 +1160,10 @@ function renderResumen(ventas){
     },
     options:{
       responsive:true, maintainAspectRatio:false,
-      scales:{ y:{ min:0, max:100, grid:{color:'#E4DDCC'} }, x:{ grid:{display:false} } },
+      scales:{
+        y:{ min:0, max:100, grid:{color:'#E4DDCC'} },
+        x:{ grid:{display:false}, ticks:{ maxRotation:0, minRotation:0, autoSkip:false, font:{size:10.5, weight:'500'}, color:'#5B5248' } }
+      },
       plugins:{ legend:{display:false} }
     }
   });
