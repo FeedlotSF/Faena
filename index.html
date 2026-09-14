@@ -537,7 +537,11 @@ a{color:var(--blood);}
   <div class="modal">
     <h3>Token de GitHub para sincronizar</h3>
     <div class="infobox mb16" style="background:#FBE9E7;border-left-color:var(--blood);">
-      Creá un <strong>fine-grained personal access token</strong> en GitHub (tu foto → <strong>Settings → Developer settings → Personal access tokens → Fine-grained tokens</strong>). En <strong>Repository access</strong> elegí <em>Only select repositories</em> y seleccioná <strong>FeedlotSF/Faena</strong>. Después en <strong>Repository permissions</strong> buscá <strong>Contents</strong> y ponelo en <strong>Read and write</strong>. Pegalo acá abajo. Se guarda <strong>solo en este navegador</strong> (nunca se sube al repo).
+      Creá un <strong>fine-grained personal access token</strong>. Lo más fácil: usá este enlace (ya viene con el permiso marcado):<br>
+      <a href="https://github.com/settings/personal-access-tokens/new?name=Romaneo%20Sync&description=Sincronizar%20data.json%20del%20panel&target_name=FeedlotSF&contents=write" target="_blank" rel="noopener"><strong>→ Crear token para este repo</strong></a><br><br>
+      Con ese enlace solo tenés que: marcar <strong>Only select repositories</strong> → elegir <strong>Faena</strong> (de FeedlotSF), elegir expiración y tocar <strong>Generate token</strong>.<br>
+      Si preferís hacerlo a mano: tu foto → <strong>Settings → Developer settings → Personal access tokens → Fine-grained tokens</strong>. En <strong>Repository permissions</strong> buscá <strong>"Contenido" / "Contents"</strong> y ponelo en <strong>Read and write</strong>.<br>
+      Pegalo acá abajo. Se guarda <strong>solo en este navegador</strong> (nunca se sube al repo).
     </div>
     <div class="field">
       <label for="inpToken">Token</label>
