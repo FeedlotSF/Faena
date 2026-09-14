@@ -237,11 +237,11 @@ tr:hover td{background:var(--bone-2);}
   font-family:'Inter',sans-serif;
   white-space:nowrap;
 }
-.badge-A{background:#E4EBDD;color:var(--pasture);}
-.badge-B{background:#F3EAD4;color:var(--ochre);}
-.badge-C{background:#F3E1DC;color:var(--blood);}
-.badge-D{background:#EAD9D3;color:var(--blood-dark);}
-.badge-neutral{background:var(--bone-2);color:var(--ink-soft);}
+.badge-A{background:#4C5B3D;color:#F0F5EC;}
+.badge-B{background:#9A6B24;color:#FFF7E8;}
+.badge-C{background:#8C2F1E;color:#FBE9E5;}
+.badge-D{background:#3A2418;color:#EEDFD7;}
+.badge-neutral{background:#6E675C;color:#FAF7F0;}
 
 .pill-row{display:flex;flex-wrap:wrap;gap:8px;}
 .pill{
@@ -433,7 +433,7 @@ a{color:var(--blood);}
     <button class="tab-btn active" data-view="viewResumen">Resumen general</button>
     <button class="tab-btn" data-view="viewVentas">Ventas</button>
     <button class="tab-btn" data-view="viewComparar">Comparar</button>
-    <button class="tab-btn" data-view="viewGlosario">Cómo leer un certificado</button>
+    <button class="tab-btn" data-view="viewGlosario">Información</button>
   </div>
 
   <!-- ============ VIEW: RESUMEN ============ -->
@@ -979,6 +979,17 @@ function calcularStatsVenta(venta){
   // Ranking de animales por kg total (para detectar outliers / top-bottom)
   const animalesOrdenados = [...animales].sort((a,b)=> b.kgTotal - a.kgTotal);
 
+  // Kg de cada media res (para el CV global del Resumen)
+  const mediasKg = filas.map(f=> isNaN(f.kg) ? 0 : f.kg);
+
+  // Distribución de categorías contada por ANIMAL (un animal = 2 medias reses)
+  const distClasifAnimales = {};
+  animales.forEach(a=>{
+    const { catCodigo } = getClasifInfo(a.categoria);
+    const key = catCodigo || 'S/D';
+    distClasifAnimales[key] = (distClasifAnimales[key]||0) + 1;
+  });
+
   // Desvío estándar de kg por media res (homogeneidad de la tropa)
   const media = kgPromedioMediaRes;
   const varianza = nMedias ? filas.reduce((s,f)=> s + Math.pow((isNaN(f.kg)?media:f.kg) - media, 2), 0) / nMedias : 0;
@@ -988,7 +999,7 @@ function calcularStatsVenta(venta){
   return {
     nAnimales, nMedias, kgTotalRes, kgPromedioMediaRes, kgPromedioAnimal,
     distTipif, distLetra, pctA, pctB, pctCD,
-    distClasif, distDenticion,
+    distClasif, distDenticion, distClasifAnimales, mediasKg,
     conContusion, pctContusion,
     rendimientoJaula, kgVivoPromedio, kgVivoTotal,
     animales, animalesOrdenados,
@@ -996,23 +1007,113 @@ function calcularStatsVenta(venta){
   };
 }
 
-// Índice de calidad de tropa: 0-100, ponderando distribución de letras de tipificación
-// A=100, B=65, C=30, D=0 — promedio ponderado por cantidad de medias reses
-function calcularIndiceCalidad(distLetra, nMedias){
-  if(!nMedias) return 0;
-  const pesos = { A:100, B:65, C:30, D:0 };
-  let total = 0;
-  Object.keys(pesos).forEach(l=>{
-    total += (distLetra[l]||0) * pesos[l];
+// Puntos por grado de tipificación (por sub-grado real del certificado).
+// La separación A↔B es amplia a propósito: entrar en "A" debe pesar mucho más
+// que "B". A1 = máxima calidad, D = mínima.
+const PUNTOS_TIPIF = { A1:100, A2:96, A:92, B1:76, B2:70, B:70, C1:44, C2:36, C:36, D:0 };
+
+function clampPuntaje(v){ return Math.max(0, Math.min(100, v)); }
+
+// Componente 1: tipificación. Promedio de los puntos de todas las medias reses.
+function puntajeTipificacion(stats){
+  let n = 0, total = 0;
+  Object.entries(stats.distTipif || {}).forEach(([k,cnt])=>{
+    const pts = PUNTOS_TIPIF[(k || '').toUpperCase()];
+    total += cnt * (pts === undefined ? 0 : pts);
+    n += cnt;
   });
-  return total / nMedias;
+  return n ? total/n : 0;
 }
+
+// Componente 2: homogeneidad de tropa. Coef. de variación bajo = mejor.
+// 6% → 100 pts; ~23% o más → 0 pts.
+function puntajeHomogeneidad(stats){
+  return clampPuntaje(100 - (stats.coefVariacion - 6) * 6);
+}
+
+// Componente 3: rendimiento (kg res / kg vivo). Solo si hay peso de jaula.
+// Rango realista 46% → 0 pts, 62% → 100 pts.
+function puntajeRendimiento(stats){
+  if(stats.rendimientoJaula === null) return null;
+  return clampPuntaje((stats.rendimientoJaula - 46) / (62 - 46) * 100);
+}
+
+// Componente 4: contusiones. 0% → 100 pts; 12.5% o más → 0 pts.
+function puntajeContusion(stats){
+  return clampPuntaje(100 - stats.pctContusion * 8);
+}
+
+// ÍNDICE DE CALIDAD TOTAL (0-100): EL único número usado en toda la app,
+// igual en Resumen, Ventas y Comparar.
+// Con peso de jaula:  tipificación 45% · homogeneidad 20% · rendimiento 25% · contusiones 10%
+// Sin peso de jaula:  tipificación 60% · homogeneidad 25% · contusiones 15%
+function calcularIndiceTotal(stats){
+  const base  = puntajeTipificacion(stats);
+  const homog = puntajeHomogeneidad(stats);
+  const rend  = puntajeRendimiento(stats);
+  const cont  = puntajeContusion(stats);
+  let puntaje, detalle;
+  if(rend !== null){
+    puntaje = base*0.45 + homog*0.20 + rend*0.25 + cont*0.10;
+    detalle = { base, homog, rend, cont, conRendimiento:true };
+  }else{
+    puntaje = base*0.60 + homog*0.25 + cont*0.15;
+    detalle = { base, homog, rend:null, cont, conRendimiento:false };
+  }
+  return { puntaje, detalle };
+}
+
+// Alias usado por el ranking del comparador
+function calcularPuntajeGeneral(stats){ return calcularIndiceTotal(stats); }
 
 function claseIndice(valor){
   if(valor >= 75) return { label:'Muy buena', color:'A' };
   if(valor >= 55) return { label:'Buena', color:'B' };
   if(valor >= 35) return { label:'Regular', color:'C' };
   return { label:'Baja', color:'D' };
+}
+
+// Fusiona las estadísticas de N ventas en una sola (para el índice del Resumen).
+function agregarStatsParaIndice(listaStats){
+  const kgs=[]; const distTipif={};
+  let nMedias=0, cont=0, totalRes=0, totalVivo=0, conRend=true;
+  listaStats.forEach(s=>{
+    kgs.push(...(s.stats.mediasKg||[]));
+    nMedias += s.stats.nMedias;
+    cont += s.stats.conContusion;
+    totalRes += s.stats.kgTotalRes;
+    Object.entries(s.stats.distTipif||{}).forEach(([k,c])=> distTipif[k]=(distTipif[k]||0)+c);
+    if(s.stats.rendimientoJaula === null){ conRend = false; }
+    else if(s.stats.kgVivoTotal){ totalVivo += s.stats.kgVivoTotal; }
+  });
+  const media = kgs.length ? kgs.reduce((a,b)=>a+b,0)/kgs.length : 0;
+  const varianza = kgs.length ? kgs.reduce((acc,k)=> acc + Math.pow(k-media,2), 0)/kgs.length : 0;
+  return {
+    nMedias,
+    distTipif,
+    coefVariacion: media ? Math.sqrt(varianza)/media*100 : 0,
+    pctContusion: nMedias ? cont/nMedias*100 : 0,
+    rendimientoJaula: (conRend && totalVivo) ? (totalRes/totalVivo)*100 : null
+  };
+}
+
+// Plurales de las categorías oficiales para el resumen "30 Novillos", etc.
+const PLURAL_CATS = {
+  'Novillito':'Novillitos','Novillo':'Novillos','Vaquillona':'Vaquillonas',
+  'Vaca':'Vacas','Macho Entero Joven':'Machos Enteros Jóvenes','Toro':'Toros'
+};
+
+// Resumen por categoría de ANIMAL, ej: "30 Novillos" o "20 Vaquillonas · 10 Novillos"
+function resumenCategoriasAnimales(stats){
+  const d = stats.distClasifAnimales || {};
+  const partes = Object.entries(d).map(([cod,cnt])=>{
+    const info = CLASIFICACION[cod];
+    const base = info ? info.nombre : (cod==='S/D' ? 'Sin dato' : cod);
+    const texto = (cnt===1) ? base : (PLURAL_CATS[base] || base+'s');
+    return { cnt, texto };
+  }).sort((a,b)=> b.cnt - a.cnt);
+  if(!partes.length) return stats.nMedias ? stats.nMedias+' medias reses' : '';
+  return partes.map(p=> p.cnt+' '+p.texto).join(' · ');
 }
 
 </script>
@@ -1073,7 +1174,7 @@ function renderResumen(ventas){
     Object.keys(sumaLetras).forEach(l=> sumaLetras[l] += x.stats.distLetra[l]||0);
     nMediasGlobal += x.stats.nMedias;
   });
-  const indiceGlobal = calcularIndiceCalidad(sumaLetras, nMediasGlobal);
+  const indiceGlobal = calcularIndiceTotal(agregarStatsParaIndice(allStats)).puntaje;
   const claseGlobal = claseIndice(indiceGlobal);
 
   const rendimientos = allStats.filter(x=>x.stats.rendimientoJaula !== null).map(x=>x.stats.rendimientoJaula);
@@ -1104,7 +1205,7 @@ function renderResumen(ventas){
       <div class="stat-tile blood">
         <div class="stat-label">Índice de calidad global</div>
         <div class="stat-value">${indiceGlobal.toFixed(0)}<span style="font-size:16px;">/100</span></div>
-        <div class="stat-note">${claseGlobal.label} — según distribución de tipificación</div>
+        <div class="stat-note">${claseGlobal.label} — tipificación + homogeneidad + rendimiento + contusiones</div>
       </div>
       <div class="stat-tile ochre">
         <div class="stat-label">Peso promedio por res</div>
@@ -1149,7 +1250,7 @@ function renderResumen(ventas){
       labels: etiquetasEvol,
       datasets:[{
         label:'Índice de calidad (0-100)',
-        data: ultimas.map(x=> calcularIndiceCalidad(x.stats.distLetra, x.stats.nMedias)),
+        data: ultimas.map(x=> calcularIndiceTotal(x.stats).puntaje),
         borderColor:'#8C2F1E',
         backgroundColor:'rgba(140,47,30,0.12)',
         fill:true,
@@ -1169,11 +1270,13 @@ function renderResumen(ventas){
   });
 
   // gráfico dona letra global
+  const totalLetras = sumaLetras.A + sumaLetras.B + sumaLetras.C + sumaLetras.D || 1;
+  const pctLetra = l=> (sumaLetras[l]/totalLetras*100).toFixed(0)+'%';
   const ctx2 = document.getElementById('chartGlobalLetra');
   chartInstances['globalLetra'] = new Chart(ctx2, {
     type:'doughnut',
     data:{
-      labels:['A (premium)','B (estándar)','C (bajo)','D (deficiente)'],
+      labels:[`A (premium) · ${pctLetra('A')}`,`B (estándar) · ${pctLetra('B')}`,`C (bajo) · ${pctLetra('C')}`,`D (deficiente) · ${pctLetra('D')}`],
       datasets:[{
         data:[sumaLetras.A, sumaLetras.B, sumaLetras.C, sumaLetras.D],
         backgroundColor:['#4C5B3D','#B8863B','#8C2F1E','#6E2317'],
@@ -1189,15 +1292,16 @@ function renderResumen(ventas){
 
 function saleRowHTML(venta, stats){
   const fc = fmtFechaCorta(venta.fecha);
-  const indice = calcularIndiceCalidad(stats.distLetra, stats.nMedias);
+  const indice = calcularIndiceTotal(stats).puntaje;
   const clase = claseIndice(indice);
+  const resCat = resumenCategoriasAnimales(stats);
   return `
     <div class="sale-row" onclick="abrirDetalleVenta('${venta.id}')">
       <div class="sale-main">
         <div class="sale-date-block">${fc.dia}<small>${fc.mes}</small></div>
         <div>
           <div style="font-weight:700;">${venta.frigorifico || 'Frigorífico sin nombre'}</div>
-          <div class="sale-meta">${stats.nAnimales} animales · ${stats.nMedias} medias reses</div>
+          <div class="sale-meta">${resCat || (stats.nAnimales+' animales')}</div>
         </div>
       </div>
       <div class="sale-metrics">
@@ -1246,8 +1350,10 @@ function renderDetalleVenta(id){
   const el = document.getElementById('viewVentas');
   if(!venta){ ventaSeleccionadaId=null; renderVentas(getVentas()); return; }
   const stats = calcularStatsVenta(venta);
-  const indice = calcularIndiceCalidad(stats.distLetra, stats.nMedias);
+  const indRes = calcularIndiceTotal(stats);
+  const indice = indRes.puntaje;
   const clase = claseIndice(indice);
+  const resCat = resumenCategoriasAnimales(stats);
 
   el.innerHTML = `
     <button class="btn btn-ghost btn-sm mb16" onclick="volverAListaVentas()">← Volver al listado</button>
@@ -1255,7 +1361,7 @@ function renderDetalleVenta(id){
     <div class="card-head">
       <div>
         <h3 style="font-size:22px;">${venta.frigorifico || 'Frigorífico sin nombre'}</h3>
-        <p class="muted">${fmtFecha(venta.fecha)} · ${stats.nAnimales} animales · ${stats.nMedias} medias reses${venta.dte ? ' · DTE '+venta.dte : ''}</p>
+        <p class="muted">${fmtFecha(venta.fecha)} · ${resCat || (stats.nAnimales+' animales')} · ${stats.nMedias} medias reses${venta.dte ? ' · DTE '+venta.dte : ''}</p>
       </div>
       <div class="flex gap8">
         <button class="btn btn-ghost btn-sm" onclick="abrirModalEditarPeso('${venta.id}')">Editar peso de jaula</button>
@@ -1292,6 +1398,14 @@ function renderDetalleVenta(id){
       el <strong>${stats.pctB.toFixed(0)}%</strong> tipificación B (estándar)
       y el <strong>${stats.pctCD.toFixed(0)}%</strong> quedó en C o D (por debajo del estándar).
       ${stats.pctContusion > 0 ? `Se registraron contusiones en el <strong>${stats.pctContusion.toFixed(0)}%</strong> de las medias reses, lo que puede indicar problemas de manejo o transporte previos a faena.` : 'No se registraron contusiones — buen manejo previo a faena.'}
+    </div>
+
+    <div class="infobox mb16">
+      <strong>Índice ${indice.toFixed(0)}/100 · ${clase.label}:</strong>
+      ${indRes.detalle.conRendimiento
+        ? `tipificación ${indRes.detalle.base.toFixed(0)} pts · homogeneidad ${indRes.detalle.homog.toFixed(0)} pts · rendimiento ${indRes.detalle.rend.toFixed(0)} pts · contusiones ${indRes.detalle.cont.toFixed(0)} pts.`
+        : `tipificación ${indRes.detalle.base.toFixed(0)} pts · homogeneidad ${indRes.detalle.homog.toFixed(0)} pts · contusiones ${indRes.detalle.cont.toFixed(0)} pts (sin dato de rendimiento).`}
+      Mirá "Información" para ver la fórmula completa.
     </div>
 
     <div class="grid grid-2">
@@ -1441,35 +1555,8 @@ function renderGraficosDetalle(stats){
 // ---------------- COMPARAR VENTAS ----------------
 let comparadorSeleccion = [];
 
-// Puntaje general 0-100 por venta: combina calidad de tipificación, rendimiento
-// y homogeneidad de tropa en un solo número fácil de rankear.
-// - Calidad: 55% del puntaje (es lo que más pesa en el precio de venta)
-// - Rendimiento: 30% del puntaje (normalizado sobre un rango realista 48%-62%)
-// - Homogeneidad: 15% del puntaje (tropa pareja = menos sorpresas)
-function calcularPuntajeGeneral(stats){
-  const calidad = calcularIndiceCalidad(stats.distLetra, stats.nMedias); // 0-100
-
-  let rendScore = null;
-  if(stats.rendimientoJaula !== null){
-    const r = stats.rendimientoJaula;
-    rendScore = Math.max(0, Math.min(100, (r - 48) / (62 - 48) * 100));
-  }
-
-  // coef. variación bajo = mejor. 4% -> ~100pts, 20%+ -> ~0pts
-  const homogScore = Math.max(0, Math.min(100, 100 - (stats.coefVariacion - 4) * 6.25));
-
-  let puntaje, detalle;
-  if(rendScore !== null){
-    puntaje = calidad*0.55 + rendScore*0.30 + homogScore*0.15;
-    detalle = { calidad, rendScore, homogScore, conRendimiento:true };
-  }else{
-    // sin dato de rendimiento, repartimos ese peso entre calidad y homogeneidad
-    puntaje = calidad*0.75 + homogScore*0.25;
-    detalle = { calidad, rendScore:null, homogScore, conRendimiento:false };
-  }
-  return { puntaje, detalle };
-}
-
+// Puntaje general 0-100 por venta = ÍNDICE DE CALIDAD TOTAL (definido arriba).
+// Se usaba acá y en las otras secciones con fórmulas distintas; ahora hay uno solo.
 function claseSemaforo(puntaje){
   if(puntaje >= 70) return { emoji:'🟢', label:'Buena', color:'A' };
   if(puntaje >= 50) return { emoji:'🟡', label:'Media', color:'B' };
@@ -1570,7 +1657,7 @@ function renderComparadorBody(ventas){
       <strong>${fmtFecha(mejor.venta.fecha)} (${mejor.venta.frigorifico||'s/frigorífico'})</strong>
       con un puntaje general de <strong>${mejor.puntaje.toFixed(0)}/100</strong>.
       ${items.length > 1 ? `La que más margen de mejora tiene es <strong>${fmtFecha(peor.venta.fecha)} (${peor.venta.frigorifico||'s/frigorífico'})</strong>, con ${peor.puntaje.toFixed(0)}/100.` : ''}
-      El puntaje combina calidad de tipificación, rendimiento y qué tan pareja fue la tropa — no hace falta leer tablas para saber cuál anduvo mejor.
+      El puntaje es el mismo índice de calidad que ves en Resumen y Ventas: combina tipificación, homogeneidad de la tropa, rendimiento y contusiones.
     </div>
 
     <div class="card mb16">
@@ -1760,6 +1847,28 @@ function renderGlosario(){
       </table>
     </div>
 
+    <div class="card mb16">
+      <h3 class="mb16">Índice de calidad (0-100): cómo se compone</h3>
+      <p class="muted small mb16">Es <strong>un único número</strong>, igual en todas las secciones (Resumen general, Ventas y Comparar) — así un mismo viaje siempre muestra el mismo valor. Se combinan 4 señales de cada certificado; si falta el peso de jaula, el índice se rearma sin rendimiento.</p>
+      <div class="gloss-item">
+        <h4>1) Tipificación — 45% a 60% del índice</h4>
+        <p class="muted small">Cada media res suma puntos por su sub-grado real del certificado, <strong>no solo por la letra</strong>: A1=100, A2=96, A=92, B1=76, B2=70, B=70, C1=44, C2=36, C=36, D=0. El promedio pesado por cantidad de media reses da el puntaje base. La distancia entre A y B es amplia a propósito: subir una tropa de B a A vale mucho más que desplazarse dentro de B.</p>
+      </div>
+      <div class="gloss-item">
+        <h4>2) Homogeneidad de tropa — 20-25%</h4>
+        <p class="muted small">Usa el coeficiente de variación del peso de las reses. Una tropa pareja (CV ≈ 6%) casi no pierde puntos; una muy despareja (CV ≈ 23% o más) pierde todos los del componente. Castiga lotes armados mezclando corrales o edades muy distintas.</p>
+      </div>
+      <div class="gloss-item">
+        <h4>3) Rendimiento — 25% (solo con peso de jaula)</h4>
+        <p class="muted small">kg de res / kg vivo, normalizado sobre un rango realista: 46% = 0 pts, 62% = 100 pts. Un rendimiento de 54-58% (típico en feedlot) aporta ~50-75 pts.</p>
+      </div>
+      <div class="gloss-item">
+        <h4>4) Contusiones — 10-15%</h4>
+        <p class="muted small">Si el 0% de las medias reses tiene contusión, aporta los 100 pts; cada 12.5% de medias contusionadas quita todo el componente. Penaliza manejo o transporte previo a faena.</p>
+      </div>
+      <p class="muted small mt16">Con peso de jaula el índice se pondera <strong>45% tipificación · 20% homogeneidad · 25% rendimiento · 10% contusiones</strong>. Sin peso de jaula pasa a <strong>60% tipificación · 25% homogeneidad · 15% contusiones</strong>. La clase (Muy buena / Buena / Regular / Baja) sale de cortes: 75+, 55+, 35+ y menor a 35.</p>
+    </div>
+
     <div class="card">
       <h3 class="mb16">Otros conceptos usados en esta app</h3>
       <div class="gloss-item">
@@ -1768,7 +1877,7 @@ function renderGlosario(){
       </div>
       <div class="gloss-item">
         <h4>Índice de calidad (0-100)</h4>
-        <p class="muted small">Un resumen propio de esta app: pondera el porcentaje de medias reses en cada letra de tipificación (A=100 puntos, B=65, C=30, D=0) y promedia según la cantidad de medias reses de la venta. Sirve para comparar rápidamente ventas o épocas sin tener que mirar toda la distribución.</p>
+        <p class="muted small">Un resumen propio de esta app que combina tipificación por sub-grado, homogeneidad de tropa, rendimiento y contusiones — explicado en detalle arriba. Sirve para comparar ventas o épocas sin tener que mirar toda la distribución.</p>
       </div>
       <div class="gloss-item">
         <h4>Homogeneidad de tropa (coeficiente de variación)</h4>
