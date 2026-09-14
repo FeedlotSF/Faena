@@ -419,9 +419,6 @@ a{color:var(--blood);}
       </div>
     </div>
     <div class="masthead-actions">
-      <button class="btn btn-ghost" id="btnExportar" title="Descargar un backup .json con todos los datos">Exportar .json</button>
-      <button class="btn btn-ghost" id="btnImportar" title="Cargar un backup .json desde el equipo">Importar .json</button>
-      <button class="btn btn-primary" id="btnSyncGH" title="Subir los datos de este navegador al repo de GitHub (nube)">☁ Sincronizar con GitHub</button>
       <button class="btn btn-primary" id="btnNuevaVenta">+ Cargar certificado</button>
     </div>
   </div>
@@ -429,8 +426,7 @@ a{color:var(--blood);}
   <div class="syncbar" id="syncBar">
     <span class="dot" id="syncDot"></span>
     <span id="syncStatus">Verificando nube…</span>
-    <button type="button" class="btn-link" id="btnPullGH">Descargar del repo</button>
-    <button type="button" class="btn-link" id="btnCambiarToken">Cambiar token</button>
+    <button type="button" class="btn-link hidden" id="btnConfigToken">Configurar token</button>
   </div>
 
   <div class="tabbar">
@@ -452,7 +448,7 @@ a{color:var(--blood);}
   <!-- ============ VIEW: GLOSARIO ============ -->
   <div class="view" id="viewGlosario"></div>
 
-  <footer class="foot">Datos sincronizados con el repositorio de GitHub (<strong>data.json</strong>) y guardados localmente en este navegador · Referencia normativa: Resolución 32/2018 y 195/2019, Ministerio de Agricultura, Ganadería y Pesca de Argentina</footer>
+  <footer class="foot">Los datos se guardan automáticamente en el repositorio de GitHub (<strong>data.json</strong>): cualquier persona que entre a esta página ve las últimas ventas · Referencia normativa: Resolución 32/2018 y 195/2019, Ministerio de Agricultura, Ganadería y Pesca de Argentina</footer>
 </div>
 
 <datalist id="listaFrigorificos"></datalist>
@@ -559,8 +555,6 @@ a{color:var(--blood);}
     </div>
   </div>
 </div>
-
-<input type="file" id="inpImportar" accept=".json" style="display:none">
 
 <script>
 // ============================================================
@@ -2221,17 +2215,20 @@ document.addEventListener('DOMContentLoaded', ()=>{
 
 <script>
 // ============================================================
-// NUBE: sincronización con el repo de GitHub vía data.json
+// NUBE: guardado automático en el repo de GitHub vía data.json
 // - data.json es la "base de datos" pública del repo.
 // - Al abrir la app, si el navegador está vacío, descarga data.json.
-// - "Sincronizar" sube los datos locales al repo usando la API
-//   de GitHub con un fine-grained token guardado en este navegador.
+// - Cada cambio (cargar/editar/borrar una venta) sube automáticamente
+//   a GitHub usando la API con el token guardado en este navegador.
 // ============================================================
 (function(){
   const GH_TOKEN_KEY = 'romaneo_github_token_v1';
   const GH_META_KEY  = 'romaneo_nube_meta_v1';
   const DATA_FORMATO = 'romaneo_feedlot_datos_v1';
   const DATA_URL     = 'data.json'; // relativo: sirve en GitHub Pages (raíz o subcarpeta)
+
+  let colaAutoPush = null;
+  let ultimoSalvadoGuardado = '';
 
   function getRepoInfo(){
     const host = window.location.hostname || '';
@@ -2242,11 +2239,6 @@ document.addEventListener('DOMContentLoaded', ()=>{
       if(o && r) return { owner:o, repo:r };
     }
     return { owner:'FeedlotSF', repo:'Faena' };
-  }
-
-  function urlVistaGithub(){
-    const { owner, repo } = getRepoInfo();
-    return 'https://github.com/' + owner + '/' + repo + '/blob/main/' + DATA_URL;
   }
 
   function getToken(){ try{ return localStorage.getItem(GH_TOKEN_KEY) || ''; }catch(e){ return ''; } }
@@ -2289,30 +2281,36 @@ document.addEventListener('DOMContentLoaded', ()=>{
     if(bar) bar.textContent = texto || '';
   }
 
-  // PULL: descarga data.json del repo y reemplaza el estado local
-  async function bajarDeGitHub(){
-    setEstadoSync('sync', 'Descargando datos del repo…');
-    try{
-      const res = await fetch(DATA_URL, { cache:'no-cache' });
-      if(!res.ok) throw new Error('HTTP '+res.status);
-      const data = await res.json();
-      if(!validarData(data)) throw new Error('formato no válido');
-      setearEstadoLocalCambio(data);
-      const n = data.ventas.length;
-      setEstadoSync('ok', 'Descargadas ' + n + ' venta(s) del repo' + (data.actualizado ? ' (' + data.actualizado.slice(0,10) + ')' : '') + '.');
-      mostrarToast('Datos descargados del repo.');
-      return true;
-    }catch(e){
-      setEstadoSync('err', 'No se pudo descargar data.json del repo.');
-      mostrarToast('⚠ No se pudo descargar data.json del repo.');
-      return false;
-    }
+  function mostrarBtnToken(visible){
+    const b = document.getElementById('btnConfigToken');
+    if(b) b.classList.toggle('hidden', !visible);
   }
 
-  // PUSH: sube el estado local como data.json vía API de GitHub
-  async function subirAGitHub(){
+  // ---------- AUTO PUSH ----------
+  // Cada vez que se guardan ventas (cargar/editar/borrar), se programa una subida.
+  const guardarVentasOriginal = guardarVentas;
+  guardarVentas = function(ventas){
+    guardarVentasOriginal(ventas);
+    programarAutoPush();
+  };
+
+  function programarAutoPush(){
+    if(colaAutoPush) clearTimeout(colaAutoPush);
+    colaAutoPush = setTimeout(()=>{ colaAutoPush = null; subirAutomaticamente(); }, 700);
+  }
+
+  async function subirAutomaticamente(){
     const token = getToken();
-    if(!token){ abrirModalToken(); return; }
+    if(!token){
+      setEstadoSync('err', 'Cambios guardados localmente, pero falta tu token para subirlos a la nube.');
+      mostrarBtnToken(true);
+      return;
+    }
+    // Evitar repetir la misma subida si no cambió nada
+    const dataJSON = construirDataJSON();
+    const firma = JSON.stringify(dataJSON);
+    if(firma === ultimoSalvadoGuardado){ setEstadoSync('ok', 'Guardado en la nube ✓'); return; }
+
     const { owner, repo } = getRepoInfo();
     const url = 'https://api.github.com/repos/' + owner + '/' + repo + '/contents/' + DATA_URL;
     const headers = {
@@ -2320,53 +2318,56 @@ document.addEventListener('DOMContentLoaded', ()=>{
       'Accept': 'application/vnd.github+json',
       'Content-Type': 'application/json'
     };
-    setEstadoSync('sync', 'Subiendo a GitHub…');
+    setEstadoSync('sync', 'Guardando cambios en la nube…');
+    mostrarBtnToken(false);
     try{
       let sha = null;
       const resGet = await fetch(url, { headers });
       if(resGet.ok){
         const meta = await resGet.json();
         sha = meta.sha;
-      }else if(resGet.status === 401 || resGet.status === 403 || resGet.status === 404){
-        // El token es inválido / sin acceso → abrir el modal para cambiarlo
+      }else if(resGet.status === 401 || resGet.status === 403){
         throw new AuthError(resGet.status);
-      }else{
+      }else if(resGet.status !== 404){
         throw new Error('GET ' + resGet.status);
       }
       const payload = {
-        message: 'Sincronizar datos del panel (romaneo)',
-        content: base64UTF8(JSON.stringify(construirDataJSON(), null, 2))
+        message: 'Guardar datos del panel (romaneo)',
+        content: base64UTF8(JSON.stringify(dataJSON, null, 2))
       };
       if(sha) payload.sha = sha;
       const resPut = await fetch(url, { method:'PUT', headers, body: JSON.stringify(payload) });
       if(!resPut.ok){
         let msg = 'HTTP ' + resPut.status;
         try{ const j = await resPut.json(); if(j.message) msg = j.message; }catch(e){}
-        if(resPut.status === 401 || resPut.status === 403 || resPut.status === 404){
+        if(resPut.status === 401 || resPut.status === 403){
           throw new AuthError(resPut.status);
         }
         throw new Error(msg);
       }
-      const result = await resPut.json();
-      const shaNuevo = result.content && result.content.sha ? result.content.sha : null;
-      guardarNubeMeta({ actualizado: new Date().toISOString(), fuente:'pushed', sha: shaNuevo });
-      setEstadoSync('ok', 'Subido a GitHub: ' + getVentas().length + ' venta(s).');
-      mostrarToast('✓ Datos subidos a GitHub.');
-      window.open(urlVistaGithub(), '_blank');
+      ultimoSalvadoGuardado = firma;
+      guardarNubeMeta({ actualizado: dataJSON.actualizado, fuente:'pushed' });
+      const hora = new Date().toLocaleTimeString('es-AR', { hour:'2-digit', minute:'2-digit' });
+      setEstadoSync('ok', 'Guardado en la nube · ' + hora + ' · ' + getVentas().length + ' venta(s)');
+      mostrarBtnToken(false);
     }catch(e){
       if(e instanceof AuthError){
-        setEstadoSync('err', 'El token guardado no funciona. Cambialo abajo.');
-        abrirModalToken('El token guardado fue rechazado por GitHub. Generá uno nuevo y pegalo acá.');
+        setEstadoSync('err', 'El token no funciona. Configurá uno nuevo para seguir guardando.');
+        mostrarBtnToken(true);
+        guardarToken('');
+        mostrarToast('⚠ Tu token de GitHub fue rechazado. Hay que configurar uno nuevo.');
       }else{
-        setEstadoSync('err', 'Fallo al subir: ' + e.message);
-        mostrarToast('⚠ No se pudo subir: ' + e.message);
+        setEstadoSync('err', 'No se pudo guardar en la nube: ' + e.message);
+        mostrarBtnToken(false);
+        mostrarToast('⚠ ' + e.message);
       }
     }
   }
   function AuthError(status){ this.status = status; this.name = 'AuthError'; this.message = 'auth'; }
   AuthError.prototype = new Error();
 
-  // Seed inicial: si el navegador está vacío, intenta cargar la nube
+  // ---------- CARGA INICIAL ----------
+  // Si el navegador está vacío, baja data.json del repo (cualquiera que entre ve los datos).
   async function intentarCargarNubeInicial(){
     try{
       const yaHay = (JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]') || []).length > 0;
@@ -2391,18 +2392,26 @@ document.addEventListener('DOMContentLoaded', ()=>{
   function actualizarEstadoNube(){
     const ventas = getVentas();
     const meta = getNubeMeta();
-    if(meta && meta.fuente === 'pushed'){
-      setEstadoSync('ok', ventas.length + ' venta(s) en este navegador · última subida ' + (meta.actualizado || '').slice(0,16).replace('T',' '));
+    if(!getToken()){
+      setEstadoSync('err', ventas.length + ' venta(s) — sincronización desactivada. Configurá el token para guardar automáticamente.');
+      mostrarBtnToken(true);
+    }else if(meta && meta.fuente === 'pushed'){
+      const hora = (meta.actualizado || '').slice(11,16).replace(':', ':');
+      setEstadoSync('ok', 'Guardado en la nube · última subida ' + (meta.actualizado||'').slice(0,10) + ' ' + hora + ' · ' + ventas.length + ' venta(s)');
+      mostrarBtnToken(false);
     }else if(meta && meta.fuente === 'repo'){
       setEstadoSync('ok', ventas.length + ' venta(s) cargadas del repo (' + (meta.actualizado || '').slice(0,10) + ')');
+      mostrarBtnToken(false);
     }else if(ventas.length > 0){
-      setEstadoSync('', ventas.length + ' venta(s) en este navegador (sin conectar con la nube).');
+      setEstadoSync('', ventas.length + ' venta(s) en este navegador.');
+      mostrarBtnToken(false);
     }else{
-      setEstadoSync('err', 'Sin datos. Cargá un certificado, importá un backup o descargá del repo.');
+      setEstadoSync('err', 'Sin datos. Cargá tu primer certificado.');
+      mostrarBtnToken(false);
     }
   }
 
-  // ---- Modal token ----
+  // ---------- Modal token ----------
   function abrirModalToken(mensaje){
     const inp = document.getElementById('inpToken');
     if(inp) inp.value = getToken();
@@ -2428,58 +2437,15 @@ document.addEventListener('DOMContentLoaded', ()=>{
     guardarToken(t);
     cerrarModalToken();
     if(!t){ mostrarToast('Token vacío — no guardado.'); return; }
-    mostrarToast('Token guardado. Subiendo…');
-    subirAGitHub();
+    ultimoSalvadoGuardado = ''; // forzar subida
+    mostrarToast('Token guardado. Subiendo cambios…');
+    subirAutomaticamente();
   }
 
-  // ---- Exportar / Importar archivo .json ----
-  function exportarDatos(){
-    const blob = new Blob([JSON.stringify(construirDataJSON(), null, 2)], { type:'application/json' });
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = 'data.json';
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-    setTimeout(()=> URL.revokeObjectURL(a.href), 500);
-    mostrarToast('Backup descargado (data.json).');
-  }
-
-  function importarDatos(file){
-    if(!file) return;
-    const reader = new FileReader();
-    reader.onload = (e)=>{
-      try{
-        const data = JSON.parse(e.target.result);
-        if(validarData(data)){
-          setearEstadoLocalCambio(data);
-          mostrarToast('✓ Importadas ' + data.ventas.length + ' venta(s).');
-        }else if(Array.isArray(data)){
-          localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-          guardarNubeMeta({ actualizado: new Date().toISOString(), fuente:'local' });
-          renderDatalistFrigorificos();
-          refrescarTodo();
-          mostrarToast('✓ Importadas ' + data.length + ' venta(s).');
-        }else{
-          mostrarToast('⚠ El archivo no parece un respaldo válido.');
-          return;
-        }
-        actualizarEstadoNube();
-      }catch(err){
-        mostrarToast('⚠ No se pudo leer el archivo.');
-      }
-    };
-    reader.onerror = ()=> mostrarToast('⚠ No se pudo leer el archivo.');
-    reader.readAsText(file, 'UTF-8');
-  }
-
-  // ---- Listeners ----
-  document.getElementById('btnSyncGH').addEventListener('click', subirAGitHub);
-  document.getElementById('btnPullGH').addEventListener('click', bajarDeGitHub);
-  document.getElementById('btnCambiarToken').addEventListener('click', ()=> abrirModalToken('Podés reemplazar el token guardado por uno nuevo.'));
-  document.getElementById('btnExportar').addEventListener('click', exportarDatos);
-  document.getElementById('btnImportar').addEventListener('click', ()=> document.getElementById('inpImportar').click());
-  document.getElementById('inpImportar').addEventListener('change', (e)=> importarDatos(e.target.files[0]));
+  // ---------- Listeners ----------
+  document.getElementById('btnConfigToken').addEventListener('click', ()=>
+    abrirModalToken(getToken() ? 'Podés reemplazar el token guardado por uno nuevo.' : '')
+  );
   document.getElementById('btnGuardarToken').addEventListener('click', guardarTokenModal);
   document.getElementById('btnCancelarToken').addEventListener('click', cerrarModalToken);
   document.getElementById('btnBorrarToken').addEventListener('click', borrarTokenGuardado);
