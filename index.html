@@ -331,6 +331,21 @@ tr:hover td{background:var(--bone-2);}
 }
 #toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
 
+/* ---------- SYNC BAR (nube) ---------- */
+.syncbar{
+  display:flex;align-items:center;gap:12px;flex-wrap:wrap;
+  background:var(--bone-2);
+  border:1px solid var(--line);
+  border-radius:5px;
+  padding:9px 14px;
+  margin:-14px 0 24px;
+  font-size:12.5px;color:var(--ink-soft);
+}
+.syncbar .dot{width:8px;height:8px;border-radius:50%;background:var(--ink-soft);flex:none;}
+.syncbar .dot.ok{background:var(--pasture);}
+.syncbar .dot.err{background:var(--blood);}
+.syncbar .dot.sync{background:var(--ochre);}
+
 /* ---------- MODAL ---------- */
 .modal-backdrop{
   position:fixed;inset:0;background:rgba(43,38,34,.5);
@@ -404,8 +419,17 @@ a{color:var(--blood);}
       </div>
     </div>
     <div class="masthead-actions">
+      <button class="btn btn-ghost" id="btnExportar" title="Descargar un backup .json con todos los datos">Exportar .json</button>
+      <button class="btn btn-ghost" id="btnImportar" title="Cargar un backup .json desde el equipo">Importar .json</button>
+      <button class="btn btn-primary" id="btnSyncGH" title="Subir los datos de este navegador al repo de GitHub (nube)">☁ Sincronizar con GitHub</button>
       <button class="btn btn-primary" id="btnNuevaVenta">+ Cargar certificado</button>
     </div>
+  </div>
+
+  <div class="syncbar" id="syncBar">
+    <span class="dot" id="syncDot"></span>
+    <span id="syncStatus">Verificando nube…</span>
+    <button type="button" class="btn-link" id="btnPullGH">Descargar del repo</button>
   </div>
 
   <div class="tabbar">
@@ -427,7 +451,7 @@ a{color:var(--blood);}
   <!-- ============ VIEW: GLOSARIO ============ -->
   <div class="view" id="viewGlosario"></div>
 
-  <footer class="foot">Datos guardados localmente en este navegador · Referencia normativa: Resolución 32/2018 y 195/2019, Ministerio de Agricultura, Ganadería y Pesca de Argentina</footer>
+  <footer class="foot">Datos sincronizados con el repositorio de GitHub (<strong>data.json</strong>) y guardados localmente en este navegador · Referencia normativa: Resolución 32/2018 y 195/2019, Ministerio de Agricultura, Ganadería y Pesca de Argentina</footer>
 </div>
 
 <datalist id="listaFrigorificos"></datalist>
@@ -507,6 +531,26 @@ a{color:var(--blood);}
 </div>
 
 <div id="toast"></div>
+
+<!-- ============ MODAL: token de GitHub ============ -->
+<div class="modal-backdrop" id="modalToken">
+  <div class="modal">
+    <h3>Token de GitHub para sincronizar</h3>
+    <div class="infobox mb16" style="background:#FBE9E7;border-left-color:var(--blood);">
+      Creá un <strong>fine-grained personal access token</strong> en GitHub (tu foto → <strong>Settings → Developer settings → Personal access tokens → Fine-grained tokens</strong>) con permiso <strong>Contents: Read and write</strong> solo sobre el repo <strong>FeedlotSF/Faena</strong>. Pegalo acá abajo. Se guarda <strong>solo en este navegador</strong> (nunca se sube al repo).
+    </div>
+    <div class="field">
+      <label for="inpToken">Token</label>
+      <input type="password" id="inpToken" placeholder="github_pat_..." autocomplete="off">
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" id="btnCancelarToken">Cancelar</button>
+      <button class="btn btn-primary" id="btnGuardarToken">Guardar y sincronizar</button>
+    </div>
+  </div>
+</div>
+
+<input type="file" id="inpImportar" accept=".json" style="display:none">
 
 <script>
 // ============================================================
@@ -2163,6 +2207,250 @@ document.addEventListener('DOMContentLoaded', ()=>{
   renderResumen(getVentas());
 });
 
+</script>
+
+<script>
+// ============================================================
+// NUBE: sincronización con el repo de GitHub vía data.json
+// - data.json es la "base de datos" pública del repo.
+// - Al abrir la app, si el navegador está vacío, descarga data.json.
+// - "Sincronizar" sube los datos locales al repo usando la API
+//   de GitHub con un fine-grained token guardado en este navegador.
+// ============================================================
+(function(){
+  const GH_TOKEN_KEY = 'romaneo_github_token_v1';
+  const GH_META_KEY  = 'romaneo_nube_meta_v1';
+  const DATA_FORMATO = 'romaneo_feedlot_datos_v1';
+  const DATA_URL     = 'data.json'; // relativo: sirve en GitHub Pages (raíz o subcarpeta)
+
+  function getRepoInfo(){
+    const host = window.location.hostname || '';
+    const p = window.location.pathname || '';
+    if(host.endsWith('.github.io')){
+      const o = host.split('.')[0];
+      const r = (p.split('/')[1] || '');
+      if(o && r) return { owner:o, repo:r };
+    }
+    return { owner:'FeedlotSF', repo:'Faena' };
+  }
+
+  function urlVistaGithub(){
+    const { owner, repo } = getRepoInfo();
+    return 'https://github.com/' + owner + '/' + repo + '/blob/main/' + DATA_URL;
+  }
+
+  function getToken(){ try{ return localStorage.getItem(GH_TOKEN_KEY) || ''; }catch(e){ return ''; } }
+  function guardarToken(t){ try{ localStorage.setItem(GH_TOKEN_KEY, t); }catch(e){} }
+  function getNubeMeta(){ try{ const r=localStorage.getItem(GH_META_KEY); return r ? JSON.parse(r) : null; }catch(e){ return null; } }
+  function guardarNubeMeta(m){ try{ localStorage.setItem(GH_META_KEY, JSON.stringify(m)); }catch(e){} }
+
+  function base64UTF8(str){
+    const bytes = new TextEncoder().encode(str);
+    let bin = '';
+    bytes.forEach(b=> bin += String.fromCharCode(b));
+    return btoa(bin);
+  }
+
+  function construirDataJSON(){
+    return {
+      formato: DATA_FORMATO,
+      actualizado: new Date().toISOString(),
+      ventas: getVentas(),
+      frigorificosCustom: getFrigorificosCustom()
+    };
+  }
+
+  function validarData(data){
+    return !!(data && typeof data === 'object' && Array.isArray(data.ventas));
+  }
+
+  function setearEstadoLocalCambio(data){
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data.ventas || []));
+    localStorage.setItem(FRIG_CUSTOM_KEY, JSON.stringify(data.frigorificosCustom || []));
+    guardarNubeMeta({ actualizado: data.actualizado || new Date().toISOString(), fuente:'repo' });
+    renderDatalistFrigorificos();
+    refrescarTodo();
+  }
+
+  function setEstadoSync(estado, texto){
+    const dot = document.getElementById('syncDot');
+    const bar = document.getElementById('syncStatus');
+    if(dot) dot.className = 'dot' + (estado ? ' '+estado : '');
+    if(bar) bar.textContent = texto || '';
+  }
+
+  // PULL: descarga data.json del repo y reemplaza el estado local
+  async function bajarDeGitHub(){
+    setEstadoSync('sync', 'Descargando datos del repo…');
+    try{
+      const res = await fetch(DATA_URL, { cache:'no-cache' });
+      if(!res.ok) throw new Error('HTTP '+res.status);
+      const data = await res.json();
+      if(!validarData(data)) throw new Error('formato no válido');
+      setearEstadoLocalCambio(data);
+      const n = data.ventas.length;
+      setEstadoSync('ok', 'Descargadas ' + n + ' venta(s) del repo' + (data.actualizado ? ' (' + data.actualizado.slice(0,10) + ')' : '') + '.');
+      mostrarToast('Datos descargados del repo.');
+      return true;
+    }catch(e){
+      setEstadoSync('err', 'No se pudo descargar data.json del repo.');
+      mostrarToast('⚠ No se pudo descargar data.json del repo.');
+      return false;
+    }
+  }
+
+  // PUSH: sube el estado local como data.json vía API de GitHub
+  async function subirAGitHub(){
+    const token = getToken();
+    if(!token){ abrirModalToken(); return; }
+    const { owner, repo } = getRepoInfo();
+    const url = 'https://api.github.com/repos/' + owner + '/' + repo + '/contents/' + DATA_URL;
+    const headers = {
+      'Authorization': 'Bearer ' + token,
+      'Accept': 'application/vnd.github+json',
+      'Content-Type': 'application/json'
+    };
+    setEstadoSync('sync', 'Subiendo a GitHub…');
+    try{
+      let sha = null;
+      const resGet = await fetch(url, { headers });
+      if(resGet.ok){
+        const meta = await resGet.json();
+        sha = meta.sha;
+      }else if(resGet.status !== 404){
+        throw new Error('GET ' + resGet.status + ' — revisá el token y su permiso (Contents: Read and write).');
+      }
+      const payload = {
+        message: 'Sincronizar datos del panel (romaneo)',
+        content: base64UTF8(JSON.stringify(construirDataJSON(), null, 2))
+      };
+      if(sha) payload.sha = sha;
+      const resPut = await fetch(url, { method:'PUT', headers, body: JSON.stringify(payload) });
+      if(!resPut.ok){
+        let msg = 'HTTP ' + resPut.status;
+        try{ const j = await resPut.json(); if(j.message) msg = j.message; }catch(e){}
+        throw new Error(msg);
+      }
+      const result = await resPut.json();
+      const shaNuevo = result.content && result.content.sha ? result.content.sha : null;
+      guardarNubeMeta({ actualizado: new Date().toISOString(), fuente:'pushed', sha: shaNuevo });
+      setEstadoSync('ok', 'Subido a GitHub: ' + getVentas().length + ' venta(s).');
+      mostrarToast('✓ Datos subidos a GitHub.');
+      window.open(urlVistaGithub(), '_blank');
+    }catch(e){
+      setEstadoSync('err', 'Fallo al subir: ' + e.message);
+      mostrarToast('⚠ No se pudo subir: ' + e.message);
+    }
+  }
+
+  // Seed inicial: si el navegador está vacío, intenta cargar la nube
+  async function intentarCargarNubeInicial(){
+    try{
+      const yaHay = (JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]') || []).length > 0;
+      if(yaHay){ actualizarEstadoNube(); return; }
+    }catch(e){}
+    try{
+      const res = await fetch(DATA_URL, { cache:'no-cache' });
+      if(!res.ok) throw new Error('HTTP '+res.status);
+      const data = await res.json();
+      if(!validarData(data)) throw new Error('formato no válido');
+      const n = data.ventas.length;
+      setearEstadoLocalCambio(data);
+      setEstadoSync('ok', 'Datos cargados desde el repo (' + n + ' venta' + (n===1?'':'s') + ').');
+      if(n > 0) mostrarToast('Datos cargados desde GitHub.');
+      return true;
+    }catch(e){
+      actualizarEstadoNube();
+      return false;
+    }
+  }
+
+  function actualizarEstadoNube(){
+    const ventas = getVentas();
+    const meta = getNubeMeta();
+    if(meta && meta.fuente === 'pushed'){
+      setEstadoSync('ok', ventas.length + ' venta(s) en este navegador · última subida ' + (meta.actualizado || '').slice(0,16).replace('T',' '));
+    }else if(meta && meta.fuente === 'repo'){
+      setEstadoSync('ok', ventas.length + ' venta(s) cargadas del repo (' + (meta.actualizado || '').slice(0,10) + ')');
+    }else if(ventas.length > 0){
+      setEstadoSync('', ventas.length + ' venta(s) en este navegador (sin conectar con la nube).');
+    }else{
+      setEstadoSync('err', 'Sin datos. Cargá un certificado, importá un backup o descargá del repo.');
+    }
+  }
+
+  // ---- Modal token ----
+  function abrirModalToken(){
+    const inp = document.getElementById('inpToken');
+    if(inp) inp.value = getToken();
+    document.getElementById('modalToken').classList.add('show');
+  }
+  function cerrarModalToken(){
+    document.getElementById('modalToken').classList.remove('show');
+  }
+  function guardarTokenModal(){
+    const inp = document.getElementById('inpToken');
+    const t = ((inp && inp.value) || '').trim();
+    guardarToken(t);
+    cerrarModalToken();
+    if(!t){ mostrarToast('Token vacío — no guardado.'); return; }
+    mostrarToast('Token guardado. Subiendo…');
+    subirAGitHub();
+  }
+
+  // ---- Exportar / Importar archivo .json ----
+  function exportarDatos(){
+    const blob = new Blob([JSON.stringify(construirDataJSON(), null, 2)], { type:'application/json' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'data.json';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(()=> URL.revokeObjectURL(a.href), 500);
+    mostrarToast('Backup descargado (data.json).');
+  }
+
+  function importarDatos(file){
+    if(!file) return;
+    const reader = new FileReader();
+    reader.onload = (e)=>{
+      try{
+        const data = JSON.parse(e.target.result);
+        if(validarData(data)){
+          setearEstadoLocalCambio(data);
+          mostrarToast('✓ Importadas ' + data.ventas.length + ' venta(s).');
+        }else if(Array.isArray(data)){
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+          guardarNubeMeta({ actualizado: new Date().toISOString(), fuente:'local' });
+          renderDatalistFrigorificos();
+          refrescarTodo();
+          mostrarToast('✓ Importadas ' + data.length + ' venta(s).');
+        }else{
+          mostrarToast('⚠ El archivo no parece un respaldo válido.');
+          return;
+        }
+        actualizarEstadoNube();
+      }catch(err){
+        mostrarToast('⚠ No se pudo leer el archivo.');
+      }
+    };
+    reader.onerror = ()=> mostrarToast('⚠ No se pudo leer el archivo.');
+    reader.readAsText(file, 'UTF-8');
+  }
+
+  // ---- Listeners ----
+  document.getElementById('btnSyncGH').addEventListener('click', subirAGitHub);
+  document.getElementById('btnPullGH').addEventListener('click', bajarDeGitHub);
+  document.getElementById('btnExportar').addEventListener('click', exportarDatos);
+  document.getElementById('btnImportar').addEventListener('click', ()=> document.getElementById('inpImportar').click());
+  document.getElementById('inpImportar').addEventListener('change', (e)=> importarDatos(e.target.files[0]));
+  document.getElementById('btnGuardarToken').addEventListener('click', guardarTokenModal);
+  document.getElementById('btnCancelarToken').addEventListener('click', cerrarModalToken);
+  document.getElementById('modalToken').addEventListener('click', (e)=>{ if(e.target.id === 'modalToken') cerrarModalToken(); });
+
+  document.addEventListener('DOMContentLoaded', ()=>{ intentarCargarNubeInicial(); });
+})();
 </script>
 </body>
 </html>
