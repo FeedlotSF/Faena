@@ -430,6 +430,7 @@ a{color:var(--blood);}
     <span class="dot" id="syncDot"></span>
     <span id="syncStatus">Verificando nube…</span>
     <button type="button" class="btn-link" id="btnPullGH">Descargar del repo</button>
+    <button type="button" class="btn-link" id="btnCambiarToken">Cambiar token</button>
   </div>
 
   <div class="tabbar">
@@ -536,7 +537,8 @@ a{color:var(--blood);}
 <div class="modal-backdrop" id="modalToken">
   <div class="modal">
     <h3>Token de GitHub para sincronizar</h3>
-    <div class="infobox mb16" style="background:#FBE9E7;border-left-color:var(--blood);">
+    <div class="infobox mb16" id="tokenMensaje" style="display:none;background:#FBE9E7;border-left-color:var(--blood);"></div>
+    <div class="infobox mb16" style="background:#F2EEE3;border-left-color:var(--ink-soft);">
       Creá un <strong>fine-grained personal access token</strong>. Enlace directo:<br>
       <a href="https://github.com/settings/personal-access-tokens/new?name=Romaneo%20Sync&description=Sincronizar%20data.json%20del%20panel&target_name=FeedlotSF&contents=write" target="_blank" rel="noopener"><strong>→ Crear token para este repo</strong></a><br><br>
       <strong>El orden del formulario importa:</strong><br>
@@ -549,6 +551,7 @@ a{color:var(--blood);}
     <div class="field">
       <label for="inpToken">Token</label>
       <input type="password" id="inpToken" placeholder="github_pat_..." autocomplete="off">
+      <button type="button" class="btn-link" id="btnBorrarToken">Borrar token guardado</button>
     </div>
     <div class="modal-actions">
       <button class="btn btn-ghost" id="btnCancelarToken">Cancelar</button>
@@ -2324,8 +2327,11 @@ document.addEventListener('DOMContentLoaded', ()=>{
       if(resGet.ok){
         const meta = await resGet.json();
         sha = meta.sha;
-      }else if(resGet.status !== 404){
-        throw new Error('GET ' + resGet.status + ' — verificá que el token tenga Contents en "Read and write" y acceso a este repo.');
+      }else if(resGet.status === 401 || resGet.status === 403 || resGet.status === 404){
+        // El token es inválido / sin acceso → abrir el modal para cambiarlo
+        throw new AuthError(resGet.status);
+      }else{
+        throw new Error('GET ' + resGet.status);
       }
       const payload = {
         message: 'Sincronizar datos del panel (romaneo)',
@@ -2336,6 +2342,9 @@ document.addEventListener('DOMContentLoaded', ()=>{
       if(!resPut.ok){
         let msg = 'HTTP ' + resPut.status;
         try{ const j = await resPut.json(); if(j.message) msg = j.message; }catch(e){}
+        if(resPut.status === 401 || resPut.status === 403 || resPut.status === 404){
+          throw new AuthError(resPut.status);
+        }
         throw new Error(msg);
       }
       const result = await resPut.json();
@@ -2345,10 +2354,17 @@ document.addEventListener('DOMContentLoaded', ()=>{
       mostrarToast('✓ Datos subidos a GitHub.');
       window.open(urlVistaGithub(), '_blank');
     }catch(e){
-      setEstadoSync('err', 'Fallo al subir: ' + e.message);
-      mostrarToast('⚠ No se pudo subir: ' + e.message);
+      if(e instanceof AuthError){
+        setEstadoSync('err', 'El token guardado no funciona. Cambialo abajo.');
+        abrirModalToken('El token guardado fue rechazado por GitHub. Generá uno nuevo y pegalo acá.');
+      }else{
+        setEstadoSync('err', 'Fallo al subir: ' + e.message);
+        mostrarToast('⚠ No se pudo subir: ' + e.message);
+      }
     }
   }
+  function AuthError(status){ this.status = status; this.name = 'AuthError'; this.message = 'auth'; }
+  AuthError.prototype = new Error();
 
   // Seed inicial: si el navegador está vacío, intenta cargar la nube
   async function intentarCargarNubeInicial(){
@@ -2387,13 +2403,24 @@ document.addEventListener('DOMContentLoaded', ()=>{
   }
 
   // ---- Modal token ----
-  function abrirModalToken(){
+  function abrirModalToken(mensaje){
     const inp = document.getElementById('inpToken');
     if(inp) inp.value = getToken();
+    const aviso = document.getElementById('tokenMensaje');
+    if(aviso){
+      aviso.textContent = mensaje || '';
+      aviso.style.display = mensaje ? 'block' : 'none';
+    }
     document.getElementById('modalToken').classList.add('show');
   }
   function cerrarModalToken(){
     document.getElementById('modalToken').classList.remove('show');
+  }
+  function borrarTokenGuardado(){
+    guardarToken('');
+    const inp = document.getElementById('inpToken');
+    if(inp) inp.value = '';
+    mostrarToast('Token borrado de este navegador.');
   }
   function guardarTokenModal(){
     const inp = document.getElementById('inpToken');
@@ -2449,11 +2476,13 @@ document.addEventListener('DOMContentLoaded', ()=>{
   // ---- Listeners ----
   document.getElementById('btnSyncGH').addEventListener('click', subirAGitHub);
   document.getElementById('btnPullGH').addEventListener('click', bajarDeGitHub);
+  document.getElementById('btnCambiarToken').addEventListener('click', ()=> abrirModalToken('Podés reemplazar el token guardado por uno nuevo.'));
   document.getElementById('btnExportar').addEventListener('click', exportarDatos);
   document.getElementById('btnImportar').addEventListener('click', ()=> document.getElementById('inpImportar').click());
   document.getElementById('inpImportar').addEventListener('change', (e)=> importarDatos(e.target.files[0]));
   document.getElementById('btnGuardarToken').addEventListener('click', guardarTokenModal);
   document.getElementById('btnCancelarToken').addEventListener('click', cerrarModalToken);
+  document.getElementById('btnBorrarToken').addEventListener('click', borrarTokenGuardado);
   document.getElementById('modalToken').addEventListener('click', (e)=>{ if(e.target.id === 'modalToken') cerrarModalToken(); });
 
   document.addEventListener('DOMContentLoaded', ()=>{ intentarCargarNubeInicial(); });
