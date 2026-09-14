@@ -537,11 +537,14 @@ a{color:var(--blood);}
   <div class="modal">
     <h3>Token de GitHub para sincronizar</h3>
     <div class="infobox mb16" style="background:#FBE9E7;border-left-color:var(--blood);">
-      Creá un <strong>fine-grained personal access token</strong>. Lo más fácil: usá este enlace (ya viene con el permiso marcado):<br>
+      Creá un <strong>fine-grained personal access token</strong>. Enlace directo:<br>
       <a href="https://github.com/settings/personal-access-tokens/new?name=Romaneo%20Sync&description=Sincronizar%20data.json%20del%20panel&target_name=FeedlotSF&contents=write" target="_blank" rel="noopener"><strong>→ Crear token para este repo</strong></a><br><br>
-      Con ese enlace solo tenés que: marcar <strong>Only select repositories</strong> → elegir <strong>Faena</strong> (de FeedlotSF), elegir expiración y tocar <strong>Generate token</strong>.<br>
-      Si preferís hacerlo a mano: tu foto → <strong>Settings → Developer settings → Personal access tokens → Fine-grained tokens</strong>. En <strong>Repository permissions</strong> buscá <strong>"Contenido" / "Contents"</strong> y ponelo en <strong>Read and write</strong>.<br>
-      Pegalo acá abajo. Se guarda <strong>solo en este navegador</strong> (nunca se sube al repo).
+      <strong>El orden del formulario importa:</strong><br>
+      1. <strong>Acceso al repositorio</strong> → marcá <em>Only select repositories</em> y elegí <strong>Faena</strong> (de FeedlotSF). <em>Sin esto NO aparecen los permisos de repositorio, y menos "Contenido".</em><br>
+      2. Subí la vista: en <strong>Repository permissions</strong> (arriba de los de cuenta, donde están "block another user", "copilot", etc.) buscá <strong>"Contenido" / "Contents"</strong> → <strong>Read and write</strong>.<br>
+      3. Elegí expiración y tocá <strong>Generate token</strong>. Pega el token acá debajo.<br>
+      <strong>Alternativa más simple (recomendada si traba):</strong> usá un <strong>token clásico</strong>: tu foto → Settings → Developer settings → <strong>Personal access tokens → Tokens (classic)</strong> → Generate new token (classic) → marcá la casilla <strong>repo</strong> → Generate. Funciona igual en esta app.<br>
+      El token se guarda <strong>solo en este navegador</strong> (nunca se sube al repo).
     </div>
     <div class="field">
       <label for="inpToken">Token</label>
