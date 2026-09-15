@@ -1213,7 +1213,7 @@ function renderResumen(ventas){
 
     <div class="grid grid-charts">
       <div class="card">
-        <div class="card-head"><div><h3>Evolución del índice de calidad</h3><p class="muted small">Cada punto = una venta. Colores por frigorífico. Arrastrá para hacer zoom.</p></div></div>
+        <div class="card-head"><div><h3>Evolución del índice de calidad</h3><p class="muted small">Cada punto = una venta. Clic en la leyenda para mostrar/ocultar frigoríficos — la tendencia se ajusta sola.</p></div></div>
         <div class="chart-box tall" style="height:320px;"><canvas id="chartEvolCalidad"></canvas></div>
       </div>
       <div class="card">
@@ -1278,32 +1278,49 @@ function renderResumen(ventas){
     });
   });
 
-  // línea de tendencia (regresión lineal)
-  let tendenciaDataset = null;
-  if(puntosParaTendencia.length >= 2){
-    const n = puntosParaTendencia.length;
-    let sx=0, sy=0, sxy=0, sxx=0;
-    puntosParaTendencia.forEach(p=>{ sx+=p.x; sy+=p.y; sxy+=p.x*p.y; sxx+=p.x*p.x; });
-    const denom = n*sxx - sx*sx;
-    if(denom !== 0){
-      const slope = (n*sxy - sx*sy) / denom;
-      const intercept = (sy - slope*sx) / n;
-      const xs = puntosParaTendencia.map(p=>p.x).sort((a,b)=>a-b);
-      tendenciaDataset = {
-        label: 'Tendencia',
-        data: [{ x: xs[0], y: slope*xs[0]+intercept }, { x: xs[xs.length-1], y: slope*xs[xs.length-1]+intercept }],
-        type: 'line',
-        borderColor: 'rgba(43,38,34,0.35)',
-        borderWidth: 2,
-        borderDash: [6, 4],
-        pointRadius: 0,
-        fill: false,
-        tension: 0,
-        order: -1
-      };
+  // línea de tendencia suavizada (media gaussiana local sobre los puntos visibles)
+  function curvaSuavizada(puntos){
+    if(!puntos.length) return [];
+    const ordenados = [...puntos].sort((a,b)=> a.x - b.x);
+    const inicio = ordenados[0].x;
+    const fin = ordenados[ordenados.length-1].x;
+    const rango = (fin - inicio) || 1;
+    const ancho = Math.max(rango / 3.5, 1);
+    const N = 60;
+    const muestras = [];
+    for(let i=0;i<=N;i++){
+      const x = inicio + (fin - inicio) * (i/N);
+      let num = 0, den = 0;
+      for(const p of ordenados){
+        const d = Math.abs(p.x - x) / ancho;
+        const w = Math.exp(-(d*d)/2);
+        num += w * p.y;
+        den += w;
+      }
+      if(den > 0) muestras.push({ x, y: num/den });
     }
+    return muestras;
   }
-  if(tendenciaDataset) datasetsEvol.push(tendenciaDataset);
+
+  let indiceTendencia = -1;
+  if(puntosParaTendencia.length >= 2){
+    const tendenciaDataset = {
+      label: 'Tendencia',
+      data: curvaSuavizada(puntosParaTendencia),
+      type: 'line',
+      borderColor: 'rgba(43,38,34,0.4)',
+      borderWidth: 2,
+      borderDash: [6, 4],
+      pointRadius: 0,
+      pointHoverRadius: 0,
+      fill: false,
+      tension: 0.3,
+      order: -1,
+      _esTendencia: true
+    };
+    datasetsEvol.push(tendenciaDataset);
+    indiceTendencia = datasetsEvol.length - 1;
+  }
 
   const ctx1 = document.getElementById('chartEvolCalidad');
   chartInstances['evolCalidad'] = new Chart(ctx1, {
@@ -1353,7 +1370,37 @@ function renderResumen(ventas){
       plugins: {
         legend: {
           position: 'bottom',
-          labels: { boxWidth: 10, font: { size: 11 }, usePointStyle: true, pointStyle: 'circle' }
+          labels: {
+            boxWidth: 10,
+            font: { size: 11 },
+            usePointStyle: true,
+            pointStyle: 'circle',
+            generateLabels: function(chart){
+              const items = Chart.defaults.plugins.legend.labels.generateLabels(chart);
+              return items.filter(l=> l.datasetIndex !== indiceTendencia);
+            }
+          },
+          onClick: function(evt, item, legend){
+            const chart = legend.chart;
+            const i = item.datasetIndex;
+            if(i === undefined || i === null || i === indiceTendencia) return;
+            const ds = chart.data.datasets[i];
+            if(!ds) return;
+
+            // toggle visibilidad del frigorífico
+            ds.hidden = !ds.hidden;
+
+            // recalcular la curva solo con los puntos visibles
+            const visibles = [];
+            chart.data.datasets.forEach((d, di)=>{
+              if(di === indiceTendencia || d.hidden) return;
+              (d.data || []).forEach(p=> visibles.push({ x: p.x, y: p.y }));
+            });
+            if(indiceTendencia >= 0 && chart.data.datasets[indiceTendencia]){
+              chart.data.datasets[indiceTendencia].data = curvaSuavizada(visibles);
+            }
+            chart.update();
+          }
         },
         tooltip: {
           callbacks: {
