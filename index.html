@@ -226,19 +226,21 @@ td{padding:8px 10px;border-bottom:1px solid var(--line);}
 tr:hover td{background:var(--bone-2);}
 .table-wrap{overflow-x:auto;}
 
-/* ---------- TABLA DE VENTAS (ordenable + filtros) ---------- */
+/* ---------- FILTROS + ORDEN EN VENTAS ---------- */
 .ventas-filtros{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px;align-items:flex-end;}
 .ventas-filtros .field{flex:1;min-width:150px;margin:0;}
 .ventas-filtros .field label{font-size:12px;margin-bottom:4px;}
 .ventas-filtros select,.ventas-filtros input{width:100%;min-width:0;}
 #btnLimpiarFiltros{flex:none;align-self:flex-end;}
-th.sortable{cursor:pointer;user-select:none;white-space:nowrap;}
-th.sortable:hover{color:var(--blood);}
-th.sortable .arrow{display:inline-block;width:14px;color:var(--blood);font-size:11px;}
-th.sorted{color:var(--blood);}
-td.num{text-align:right;font-variant-numeric:tabular-nums;}
-tr.vacas-fila td{background:rgba(228,26,52,.07);}
-tr.vacas-fila:hover td{background:rgba(228,26,52,.12);}
+.ventas-sortbar{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px;}
+.sort-btn{
+  font-family:'Inter',sans-serif;font-size:12px;font-weight:600;
+  padding:5px 10px;border-radius:3px;
+  border:1px solid var(--line);background:var(--paper);color:var(--ink-soft);
+  cursor:pointer;
+}
+.sort-btn:hover{color:var(--ink);}
+.sort-btn.active{border-color:var(--blood);color:var(--blood);background:rgba(150,47,24,.06);}
 
 /* ---------- BADGES ---------- */
 .badge{
@@ -1559,6 +1561,18 @@ let ventasFiltros = { categoria:'', frigo:'', desde:'', hasta:'' };
 let ventasOrden = { campo:'fecha', dir:-1 };
 let ventasCache = [];
 
+const VENTAS_CAMPOS = [
+  { campo:'fecha', etiqueta:'Fecha' },
+  { campo:'frigorifico', etiqueta:'Frigorífico' },
+  { campo:'categoria', etiqueta:'Categoría' },
+  { campo:'nAnimales', etiqueta:'Animales' },
+  { campo:'kgTotalRes', etiqueta:'Kg res' },
+  { campo:'kgVivoTotal', etiqueta:'Kg PV' },
+  { campo:'kgVivoPromedio', etiqueta:'Kg prom PV/cab' },
+  { campo:'rendimiento', etiqueta:'Rendimiento' },
+  { campo:'indice', etiqueta:'Índice' }
+];
+
 // Categoría dominante (código) de una venta, para el filtro
 function categoriaDominante(stats){
   const d = stats.distClasifAnimales || {};
@@ -1587,7 +1601,9 @@ function renderVentas(ventas){
 
   el.innerHTML = `
     <div class="card">
-      <div class="card-head"><h3>Todas las ventas</h3></div>
+      <div class="card-head"><h3>Todas las ventas</h3>
+        <p class="muted small" id="ventasContador"></p>
+      </div>
       <div class="ventas-filtros">
         <div class="field">
           <label for="filtroCat">Categoría</label>
@@ -1613,54 +1629,39 @@ function renderVentas(ventas){
         </div>
         <button class="btn btn-sm btn-ghost" id="btnLimpiarFiltros">Limpiar</button>
       </div>
-      <div class="table-wrap">
-        <table id="tablaVentas">
-          <thead>
-            <tr>
-              <th data-campo="fecha" class="sortable">Fecha <span class="arrow"></span></th>
-              <th data-campo="frigorifico" class="sortable">Frigorífico <span class="arrow"></span></th>
-              <th data-campo="categoria" class="sortable">Categoría <span class="arrow"></span></th>
-              <th data-campo="nAnimales" class="sortable">Animales <span class="arrow"></span></th>
-              <th data-campo="kgTotalRes" class="sortable num">Kg res <span class="arrow"></span></th>
-              <th data-campo="kgVivoTotal" class="sortable num">Kg PV <span class="arrow"></span></th>
-              <th data-campo="kgVivoPromedio" class="sortable num">Kg prom PV/cab <span class="arrow"></span></th>
-              <th data-campo="rendimiento" class="sortable num">Rend. <span class="arrow"></span></th>
-              <th data-campo="indice" class="sortable num">Índice <span class="arrow"></span></th>
-            </tr>
-          </thead>
-          <tbody id="tablaVentasBody"></tbody>
-        </table>
+      <div class="ventas-sortbar" id="ventasSortbar">
+        ${VENTAS_CAMPOS.map(c=> `<button class="sort-btn" data-campo="${c.campo}">${c.etiqueta}</button>`).join('')}
       </div>
-      <p class="muted small mt8" id="ventasContador"></p>
+      <div id="listaVentas"></div>
     </div>`;
 
   document.getElementById('filtroCat').addEventListener('change', e=>{
-    ventasFiltros.categoria = e.target.value; pintarTablaVentas();
+    ventasFiltros.categoria = e.target.value; pintarListaVentas();
   });
   document.getElementById('filtroFrigo').addEventListener('change', e=>{
-    ventasFiltros.frigo = e.target.value; pintarTablaVentas();
+    ventasFiltros.frigo = e.target.value; pintarListaVentas();
   });
   document.getElementById('filtroDesde').addEventListener('change', e=>{
-    ventasFiltros.desde = e.target.value; pintarTablaVentas();
+    ventasFiltros.desde = e.target.value; pintarListaVentas();
   });
   document.getElementById('filtroHasta').addEventListener('change', e=>{
-    ventasFiltros.hasta = e.target.value; pintarTablaVentas();
+    ventasFiltros.hasta = e.target.value; pintarListaVentas();
   });
   document.getElementById('btnLimpiarFiltros').addEventListener('click', ()=>{
     ventasFiltros = { categoria:'', frigo:'', desde:'', hasta:'' };
     ventasOrden = { campo:'fecha', dir:-1 };
     renderVentas(getVentas());
   });
-  document.querySelectorAll('#tablaVentas th.sortable').forEach(th=>{
-    th.addEventListener('click', ()=>{
-      const campo = th.dataset.campo;
-      if(ventasOrden.campo === campo) ventasOrden.dir *= -1;
-      else ventasOrden = { campo, dir: -1 };
-      pintarTablaVentas();
-    });
+  document.getElementById('ventasSortbar').addEventListener('click', e=>{
+    const btn = e.target.closest('.sort-btn');
+    if(!btn) return;
+    const campo = btn.dataset.campo;
+    if(ventasOrden.campo === campo) ventasOrden.dir *= -1;
+    else ventasOrden = { campo, dir: -1 };
+    pintarListaVentas();
   });
 
-  pintarTablaVentas();
+  pintarListaVentas();
 }
 
 function valorCampo(x, campo){
@@ -1678,7 +1679,7 @@ function valorCampo(x, campo){
   return '';
 }
 
-function pintarTablaVentas(){
+function pintarListaVentas(){
   const { campo, dir } = ventasOrden;
   let filas = ventasCache.filter(x=>{
     if(ventasFiltros.categoria && categoriaDominante(x.stats) !== ventasFiltros.categoria) return false;
@@ -1696,38 +1697,18 @@ function pintarTablaVentas(){
     return cmp * dir;
   });
 
-  document.querySelectorAll('#tablaVentas th.sortable').forEach(th=>{
-    th.classList.toggle('sorted', th.dataset.campo === campo);
-    const arrow = th.dataset.campo === campo ? (dir < 0 ? '▼' : '▲') : '';
-    th.querySelector('.arrow').textContent = arrow;
+  VENTAS_CAMPOS.forEach(c=>{
+    const btn = document.querySelector(`#ventasSortbar .sort-btn[data-campo="${c.campo}"]`);
+    const activo = ventasOrden.campo === c.campo;
+    btn.classList.toggle('active', activo);
+    btn.textContent = c.etiqueta + (activo ? (dir < 0 ? ' ▼' : ' ▲') : '');
   });
 
-  document.getElementById('tablaVentasBody').innerHTML = filas.map(filaVentaHTML).join('');
+  document.getElementById('listaVentas').innerHTML = filas.map(x=> saleRowHTML(x.venta, x.stats)).join('');
   document.getElementById('ventasContador').textContent =
     filas.length === ventasCache.length
       ? `${ventasCache.length} ventas`
       : `Mostrando ${filas.length} de ${ventasCache.length} ventas`;
-}
-
-function filaVentaHTML(x){
-  const { venta, stats } = x;
-  const esVaca = esVentaDeVacas(stats);
-  const indice = calcularIndiceTotal(stats).puntaje;
-  const clase = claseIndice(indice);
-  const cat = categoriaDominante(stats);
-  const rendColor = colorRendimiento(stats.rendimientoJaula);
-  return `
-    <tr class="${esVaca ? 'vacas-fila' : ''}" onclick="abrirDetalleVenta('${venta.id}')">
-      <td>${fmtFecha(venta.fecha)}</td>
-      <td>${venta.frigorifico || '—'}${esVaca ? ' <span class="badge badge-vaca">🐄</span>' : ''}</td>
-      <td>${CLASIFICACION[cat] ? CLASIFICACION[cat].nombre : (cat || '—')}</td>
-      <td>${stats.nAnimales}</td>
-      <td class="num">${fmtKg(stats.kgTotalRes)}</td>
-      <td class="num">${stats.kgVivoTotal ? fmtKg(stats.kgVivoTotal) : '—'}</td>
-      <td class="num">${stats.kgVivoPromedio ? stats.kgVivoPromedio.toFixed(0)+' kg' : '—'}</td>
-      <td class="num" ${rendColor ? `style="color:${rendColor};font-weight:700;"` : ''}>${stats.rendimientoJaula !== null ? stats.rendimientoJaula.toFixed(1)+'%' : '—'}</td>
-      <td class="num"><span class="badge badge-${clase.color}">${indice.toFixed(0)}</span></td>
-    </tr>`;
 }
 
 function abrirDetalleVenta(id){
