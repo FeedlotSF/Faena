@@ -61,7 +61,7 @@ h1,h2,h3,h4{
 ::selection{background:var(--blood);color:var(--paper);}
 
 /* ---------- LAYOUT SHELL ---------- */
-.shell{max-width:1180px;margin:0 auto;padding:0 24px 64px;}
+.shell{max-width:1400px;margin:0 auto;padding:0 12px 64px;}
 
 .masthead{
   border-bottom:3px solid var(--ink);
@@ -162,7 +162,8 @@ h1,h2,h3,h4{
 .grid-2{grid-template-columns:1fr 1fr;}
 .grid-3{grid-template-columns:repeat(3,1fr);}
 .grid-4{grid-template-columns:repeat(4,1fr);}
-@media(max-width:860px){.grid-2,.grid-3,.grid-4{grid-template-columns:1fr;}}
+.grid-charts{grid-template-columns:1.8fr 1fr;}
+@media(max-width:860px){.grid-2,.grid-3,.grid-4,.grid-charts{grid-template-columns:1fr;}}
 
 /* ---------- STAT TILES ---------- */
 .stat-tile{
@@ -1180,21 +1181,6 @@ function renderResumen(ventas){
   const rendimientos = allStats.filter(x=>x.stats.rendimientoJaula !== null).map(x=>x.stats.rendimientoJaula);
   const rendProm = rendimientos.length ? rendimientos.reduce((a,b)=>a+b,0)/rendimientos.length : null;
 
-  // últimas 6 ventas ordenadas por fecha para evolución
-  const ordenadas = [...allStats].sort((a,b)=> new Date(a.venta.fecha) - new Date(b.venta.fecha));
-  const ultimas = ordenadas.slice(-6);
-
-  // etiqueta de 2 líneas: fecha corta arriba (21-jul), frigorífico abajo
-  function etiquetaEvolucion(venta){
-    const fc = fmtFechaCorta(venta.fecha);
-    const dia = parseInt(fc.dia,10);
-    const mes = (fc.mes || '').toLowerCase();
-    const frigo = venta.frigorifico || 's/f';
-    const corto = frigo.length > 12 ? frigo.slice(0,11) + '…' : frigo;
-    return [dia + '-' + mes, corto];
-  }
-  const etiquetasEvol = ultimas.map(x=> etiquetaEvolucion(x.venta));
-
   el.innerHTML = `
     <div class="grid grid-4 mb16">
       <div class="stat-tile">
@@ -1219,10 +1205,10 @@ function renderResumen(ventas){
       </div>
     </div>
 
-    <div class="grid grid-2">
+    <div class="grid grid-charts">
       <div class="card">
-        <div class="card-head"><div><h3>Evolución del índice de calidad</h3><p class="muted small">Últimas ${ultimas.length} ventas, en orden cronológico</p></div></div>
-        <div class="chart-box tall"><canvas id="chartEvolCalidad"></canvas></div>
+        <div class="card-head"><div><h3>Evolución del índice de calidad</h3><p class="muted small">Cada punto = una venta. Colores por frigorífico. Arrastrá para hacer zoom.</p></div></div>
+        <div class="chart-box tall" style="height:320px;"><canvas id="chartEvolCalidad"></canvas></div>
       </div>
       <div class="card">
         <div class="card-head"><div><h3>Composición global de tipificación</h3><p class="muted small">Todas las ventas cargadas, por letra</p></div></div>
@@ -1242,30 +1228,152 @@ function renderResumen(ventas){
   const recientes = [...allStats].sort((a,b)=> new Date(b.venta.fecha) - new Date(a.venta.fecha)).slice(0,5);
   document.getElementById('resumenListaVentas').innerHTML = recientes.map(x=> saleRowHTML(x.venta, x.stats)).join('');
 
-  // gráfico evolución índice de calidad
+  // gráfico evolución índice de calidad — scatter por frigorífico con tendencia
+  const COLORES_FRIGO = ['#8C2F1E','#4C5B3D','#B8863B','#2E6B8A','#9B4DCA','#D64550','#1A8A6B','#C47A24'];
+  const todosOrdenados = [...allStats].sort((a,b)=> new Date(a.venta.fecha) - new Date(b.venta.fecha));
+
+  // filtrar: mostrar ventas de los últimos 4 meses; si hay menos de 2, mostrar todas
+  const hoy = new Date();
+  const cuatroMesesAtras = new Date(hoy);
+  cuatroMesesAtras.setMonth(cuatroMesesAtras.getMonth() - 4);
+  const ventasRecientes = todosOrdenados.filter(x=> x.venta.fecha && new Date(x.venta.fecha) >= cuatroMesesAtras);
+  const ventasFiltradas = ventasRecientes.length >= 2 ? ventasRecientes : todosOrdenados;
+
+  // agrupar por frigorífico
+  const frigoMap = new Map();
+  ventasFiltradas.forEach(x=>{
+    const frigo = x.venta.frigorifico || 'Sin frigorífico';
+    if(!frigoMap.has(frigo)) frigoMap.set(frigo, []);
+    frigoMap.get(frigo).push(x);
+  });
+
+  const datasetsEvol = [];
+  let colorIdx = 0;
+  const puntosParaTendencia = [];
+  frigoMap.forEach((items, frigo)=>{
+    const color = COLORES_FRIGO[colorIdx % COLORES_FRIGO.length];
+    colorIdx++;
+    const puntos = items.map(x=>{
+      const d = new Date(x.venta.fecha);
+      const indice = calcularIndiceTotal(x.stats).puntaje;
+      puntosParaTendencia.push({ x: d.getTime(), y: indice });
+      return { x: d.getTime(), y: indice, _venta: x.venta, _stats: x.stats };
+    });
+    datasetsEvol.push({
+      label: frigo,
+      data: puntos,
+      backgroundColor: color,
+      borderColor: color,
+      pointRadius: 5,
+      pointHoverRadius: 8,
+      pointStyle: 'circle',
+      pointBorderWidth: 1,
+      pointBorderColor: '#FAF7F0'
+    });
+  });
+
+  // línea de tendencia (regresión lineal)
+  let tendenciaDataset = null;
+  if(puntosParaTendencia.length >= 2){
+    const n = puntosParaTendencia.length;
+    let sx=0, sy=0, sxy=0, sxx=0;
+    puntosParaTendencia.forEach(p=>{ sx+=p.x; sy+=p.y; sxy+=p.x*p.y; sxx+=p.x*p.x; });
+    const denom = n*sxx - sx*sx;
+    if(denom !== 0){
+      const slope = (n*sxy - sx*sy) / denom;
+      const intercept = (sy - slope*sx) / n;
+      const xs = puntosParaTendencia.map(p=>p.x).sort((a,b)=>a-b);
+      tendenciaDataset = {
+        label: 'Tendencia',
+        data: [{ x: xs[0], y: slope*xs[0]+intercept }, { x: xs[xs.length-1], y: slope*xs[xs.length-1]+intercept }],
+        type: 'line',
+        borderColor: 'rgba(43,38,34,0.35)',
+        borderWidth: 2,
+        borderDash: [6, 4],
+        pointRadius: 0,
+        fill: false,
+        tension: 0,
+        order: -1
+      };
+    }
+  }
+  if(tendenciaDataset) datasetsEvol.push(tendenciaDataset);
+
   const ctx1 = document.getElementById('chartEvolCalidad');
   chartInstances['evolCalidad'] = new Chart(ctx1, {
-    type:'line',
-    data:{
-      labels: etiquetasEvol,
-      datasets:[{
-        label:'Índice de calidad (0-100)',
-        data: ultimas.map(x=> calcularIndiceTotal(x.stats).puntaje),
-        borderColor:'#8C2F1E',
-        backgroundColor:'rgba(140,47,30,0.12)',
-        fill:true,
-        tension:0.25,
-        pointRadius:4,
-        pointBackgroundColor:'#8C2F1E'
-      }]
-    },
-    options:{
-      responsive:true, maintainAspectRatio:false,
-      scales:{
-        y:{ min:0, max:100, grid:{color:'#E4DDCC'} },
-        x:{ grid:{display:false}, ticks:{ maxRotation:0, minRotation:0, autoSkip:false, font:{size:10.5, weight:'500'}, color:'#5B5248' } }
+    type: 'scatter',
+    data: { datasets: datasetsEvol },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      interaction: { mode: 'nearest', intersect: true },
+      scales: {
+        x: {
+          type: 'linear',
+          position: 'bottom',
+          afterBuildTicks: function(axis){
+            const minDate = new Date(axis.min);
+            const maxDate = new Date(axis.max);
+            const ticks = [];
+            const d = new Date(minDate.getFullYear(), minDate.getMonth(), 1);
+            if(d.getTime() < minDate.getTime()) d.setMonth(d.getMonth() + 1);
+            while(d.getTime() <= maxDate.getTime()){
+              ticks.push({ value: d.getTime() });
+              d.setMonth(d.getMonth() + 1);
+            }
+            axis.ticks = ticks;
+          },
+          ticks: {
+            callback: function(val){
+              const d = new Date(val);
+              const meses = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+              return meses[d.getMonth()] + ' \'' + String(d.getFullYear()).slice(2);
+            },
+            font: { size: 11, weight: '500' },
+            color: '#5B5248',
+            maxRotation: 0
+          },
+          grid: {
+            color: '#E4DDCC',
+            drawTicks: true
+          },
+          title: { display: false }
+        },
+        y: {
+          min: 0, max: 100,
+          grid: { color: '#E4DDCC' },
+          title: { display: true, text: 'Índice de calidad', font: { size: 11 }, color: '#5B5248' }
+        }
       },
-      plugins:{ legend:{display:false} }
+      plugins: {
+        legend: {
+          position: 'bottom',
+          labels: { boxWidth: 10, font: { size: 11 }, usePointStyle: true, pointStyle: 'circle' }
+        },
+        tooltip: {
+          callbacks: {
+            title: function(items){
+              if(!items.length) return '';
+              const raw = items[0].raw;
+              if(!raw._venta) return '';
+              const v = raw._venta;
+              const [y,m,d] = v.fecha.split('-');
+              return d+'/'+m+'/'+y + (v.frigorifico ? ' — '+v.frigorifico : '');
+            },
+            label: function(ctx){
+              const raw = ctx.raw;
+              if(!raw._venta || !raw._stats) return 'Índice: ' + ctx.parsed.y.toFixed(0);
+              const v = raw._venta;
+              const s = raw._stats;
+              const indice = calcularIndiceTotal(s).puntaje;
+              return [
+                'Índice: ' + indice.toFixed(0) + '/100',
+                s.nAnimales + ' animales · ' + fmtKg(s.kgTotalRes),
+                v.dte ? 'DTE: ' + v.dte : ''
+              ].filter(Boolean);
+            }
+          }
+        }
+      }
     }
   });
 
