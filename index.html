@@ -226,6 +226,20 @@ td{padding:8px 10px;border-bottom:1px solid var(--line);}
 tr:hover td{background:var(--bone-2);}
 .table-wrap{overflow-x:auto;}
 
+/* ---------- TABLA DE VENTAS (ordenable + filtros) ---------- */
+.ventas-filtros{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px;align-items:flex-end;}
+.ventas-filtros .field{flex:1;min-width:150px;margin:0;}
+.ventas-filtros .field label{font-size:12px;margin-bottom:4px;}
+.ventas-filtros select,.ventas-filtros input{width:100%;min-width:0;}
+#btnLimpiarFiltros{flex:none;align-self:flex-end;}
+th.sortable{cursor:pointer;user-select:none;white-space:nowrap;}
+th.sortable:hover{color:var(--blood);}
+th.sortable .arrow{display:inline-block;width:14px;color:var(--blood);font-size:11px;}
+th.sorted{color:var(--blood);}
+td.num{text-align:right;font-variant-numeric:tabular-nums;}
+tr.vacas-fila td{background:rgba(228,26,52,.07);}
+tr.vacas-fila:hover td{background:rgba(228,26,52,.12);}
+
 /* ---------- BADGES ---------- */
 .badge{
   display:inline-flex;
@@ -1501,6 +1515,15 @@ function esVentaDeVacas(stats){
   return total > 0 && (vacas/total) >= 0.5;
 }
 
+// Formato condicional del rendimiento (distinto al semáforo de calidad):
+// ≥58% excelente (verde), 55-58% bueno (ocre), <55% bajo (rojo)
+function colorRendimiento(val){
+  if(val === null || val === undefined) return '';
+  if(val >= 58) return '#2E7D57';
+  if(val >= 55) return '#B8863B';
+  return '#B4432E';
+}
+
 function saleRowHTML(venta, stats){
   const fc = fmtFechaCorta(venta.fecha);
   const indice = calcularIndiceTotal(stats).puntaje;
@@ -1508,6 +1531,8 @@ function saleRowHTML(venta, stats){
   const resCat = resumenCategoriasAnimales(stats);
   const esVaca = esVentaDeVacas(stats);
   const colorIndice = { A:'#FFFFFF', B:'#FFF6E0', C:'#FFEDE7', D:'#F7E9E1' }[clase.color] || '#FFFFFF';
+  const tienePV = stats.kgVivoTotal && stats.kgVivoPromedio;
+  const rendColor = colorRendimiento(stats.rendimientoJaula);
   return `
     <div class="sale-row ${esVaca ? 'vacas' : ''}" onclick="abrirDetalleVenta('${venta.id}')">
       <div class="sale-main">
@@ -1518,16 +1543,31 @@ function saleRowHTML(venta, stats){
         </div>
       </div>
       <div class="sale-metrics">
-        <div><b>${fmtKg(stats.kgTotalRes)}</b><span class="metric-label">total</span></div>
-        <div><b>${stats.kgPromedioAnimal.toFixed(0)} kg</b><span class="metric-label">prom/animal</span></div>
+        <div><b>${fmtKg(stats.kgTotalRes)}</b><span class="metric-label">kg res total</span></div>
+        <div><b>${stats.kgPromedioAnimal.toFixed(0)} kg</b><span class="metric-label">kg prom res/cab</span></div>
+        ${tienePV ? `<div><b>${fmtKg(stats.kgVivoTotal)}</b><span class="metric-label">kg PV</span></div>` : ''}
+        ${tienePV ? `<div><b>${stats.kgVivoPromedio.toFixed(0)} kg</b><span class="metric-label">kg prom PV/cab</span></div>` : ''}
         <div><b class="badge badge-${clase.color}" style="font-size:14px;color:${colorIndice};">${indice.toFixed(0)}</b><span class="metric-label">índice calidad</span></div>
-        ${stats.rendimientoJaula !== null ? `<div><b>${stats.rendimientoJaula.toFixed(1)}%</b><span class="metric-label">rendimiento</span></div>` : ''}
+        ${stats.rendimientoJaula !== null ? `<div><b style="color:${rendColor || 'var(--ink)'};font-size:16px;">${stats.rendimientoJaula.toFixed(1)}%</b><span class="metric-label">rendimiento</span></div>` : ''}
       </div>
     </div>`;
 }
 
 // ---------------- VENTAS: listado + detalle ----------------
 let ventaSeleccionadaId = null;
+let ventasFiltros = { categoria:'', frigo:'', desde:'', hasta:'' };
+let ventasOrden = { campo:'fecha', dir:-1 };
+let ventasCache = [];
+
+// Categoría dominante (código) de una venta, para el filtro
+function categoriaDominante(stats){
+  const d = stats.distClasifAnimales || {};
+  let mejor = '', mejorCnt = -1;
+  Object.entries(d).forEach(([cod,cnt])=>{
+    if(cnt > mejorCnt){ mejor = cod; mejorCnt = cnt; }
+  });
+  return mejor;
+}
 
 function renderVentas(ventas){
   const el = document.getElementById('viewVentas');
@@ -1539,15 +1579,155 @@ function renderVentas(ventas){
     renderDetalleVenta(ventaSeleccionadaId);
     return;
   }
-  const allStats = ventas.map(v=>({ venta:v, stats: calcularStatsVenta(v) }))
-    .sort((a,b)=> new Date(b.venta.fecha) - new Date(a.venta.fecha));
+  ventasCache = ventas.map(v=>({ venta:v, stats: calcularStatsVenta(v) }));
+
+  // opciones de filtros
+  const frigos = [...new Set(ventas.map(v=> v.frigorifico || 'S/Frigorífico'))].sort();
+  const cats = [...new Set(ventasCache.map(x=> categoriaDominante(x.stats)).filter(Boolean))].sort();
 
   el.innerHTML = `
     <div class="card">
-      <div class="card-head"><h3>Todas las ventas (${ventas.length})</h3></div>
-      <div id="listaCompletaVentas"></div>
+      <div class="card-head"><h3>Todas las ventas</h3></div>
+      <div class="ventas-filtros">
+        <div class="field">
+          <label for="filtroCat">Categoría</label>
+          <select id="filtroCat">
+            <option value="">Todas</option>
+            ${cats.map(c=> `<option value="${c}" ${ventasFiltros.categoria===c?'selected':''}>${CLASIFICACION[c] ? CLASIFICACION[c].nombre : c}</option>`).join('')}
+          </select>
+        </div>
+        <div class="field">
+          <label for="filtroFrigo">Frigorífico</label>
+          <select id="filtroFrigo">
+            <option value="">Todos</option>
+            ${frigos.map(f=> `<option value="${f}" ${ventasFiltros.frigo===f?'selected':''}>${f}</option>`).join('')}
+          </select>
+        </div>
+        <div class="field">
+          <label for="filtroDesde">Desde</label>
+          <input type="date" id="filtroDesde" value="${ventasFiltros.desde}">
+        </div>
+        <div class="field">
+          <label for="filtroHasta">Hasta</label>
+          <input type="date" id="filtroHasta" value="${ventasFiltros.hasta}">
+        </div>
+        <button class="btn btn-sm btn-ghost" id="btnLimpiarFiltros">Limpiar</button>
+      </div>
+      <div class="table-wrap">
+        <table id="tablaVentas">
+          <thead>
+            <tr>
+              <th data-campo="fecha" class="sortable">Fecha <span class="arrow"></span></th>
+              <th data-campo="frigorifico" class="sortable">Frigorífico <span class="arrow"></span></th>
+              <th data-campo="categoria" class="sortable">Categoría <span class="arrow"></span></th>
+              <th data-campo="nAnimales" class="sortable">Animales <span class="arrow"></span></th>
+              <th data-campo="kgTotalRes" class="sortable num">Kg res <span class="arrow"></span></th>
+              <th data-campo="kgVivoTotal" class="sortable num">Kg PV <span class="arrow"></span></th>
+              <th data-campo="kgVivoPromedio" class="sortable num">Kg prom PV/cab <span class="arrow"></span></th>
+              <th data-campo="rendimiento" class="sortable num">Rend. <span class="arrow"></span></th>
+              <th data-campo="indice" class="sortable num">Índice <span class="arrow"></span></th>
+            </tr>
+          </thead>
+          <tbody id="tablaVentasBody"></tbody>
+        </table>
+      </div>
+      <p class="muted small mt8" id="ventasContador"></p>
     </div>`;
-  document.getElementById('listaCompletaVentas').innerHTML = allStats.map(x=> saleRowHTML(x.venta, x.stats)).join('');
+
+  document.getElementById('filtroCat').addEventListener('change', e=>{
+    ventasFiltros.categoria = e.target.value; pintarTablaVentas();
+  });
+  document.getElementById('filtroFrigo').addEventListener('change', e=>{
+    ventasFiltros.frigo = e.target.value; pintarTablaVentas();
+  });
+  document.getElementById('filtroDesde').addEventListener('change', e=>{
+    ventasFiltros.desde = e.target.value; pintarTablaVentas();
+  });
+  document.getElementById('filtroHasta').addEventListener('change', e=>{
+    ventasFiltros.hasta = e.target.value; pintarTablaVentas();
+  });
+  document.getElementById('btnLimpiarFiltros').addEventListener('click', ()=>{
+    ventasFiltros = { categoria:'', frigo:'', desde:'', hasta:'' };
+    ventasOrden = { campo:'fecha', dir:-1 };
+    renderVentas(getVentas());
+  });
+  document.querySelectorAll('#tablaVentas th.sortable').forEach(th=>{
+    th.addEventListener('click', ()=>{
+      const campo = th.dataset.campo;
+      if(ventasOrden.campo === campo) ventasOrden.dir *= -1;
+      else ventasOrden = { campo, dir: -1 };
+      pintarTablaVentas();
+    });
+  });
+
+  pintarTablaVentas();
+}
+
+function valorCampo(x, campo){
+  switch(campo){
+    case 'fecha': return x.venta.fecha || '';
+    case 'frigorifico': return (x.venta.frigorifico || '').toLowerCase();
+    case 'categoria': return categoriaDominante(x.stats) || '';
+    case 'nAnimales': return x.stats.nAnimales;
+    case 'kgTotalRes': return x.stats.kgTotalRes;
+    case 'kgVivoTotal': return x.stats.kgVivoTotal || 0;
+    case 'kgVivoPromedio': return x.stats.kgVivoPromedio || 0;
+    case 'rendimiento': return x.stats.rendimientoJaula !== null ? x.stats.rendimientoJaula : -1;
+    case 'indice': return calcularIndiceTotal(x.stats).puntaje;
+  }
+  return '';
+}
+
+function pintarTablaVentas(){
+  const { campo, dir } = ventasOrden;
+  let filas = ventasCache.filter(x=>{
+    if(ventasFiltros.categoria && categoriaDominante(x.stats) !== ventasFiltros.categoria) return false;
+    if(ventasFiltros.frigo && (x.venta.frigorifico || 'S/Frigorífico') !== ventasFiltros.frigo) return false;
+    if(ventasFiltros.desde && x.venta.fecha && x.venta.fecha < ventasFiltros.desde) return false;
+    if(ventasFiltros.hasta && x.venta.fecha && x.venta.fecha > ventasFiltros.hasta) return false;
+    return true;
+  });
+
+  filas.sort((a,b)=>{
+    const va = valorCampo(a, campo), vb = valorCampo(b, campo);
+    let cmp;
+    if(typeof va === 'number' && typeof vb === 'number') cmp = va - vb;
+    else cmp = String(va).localeCompare(String(vb), 'es');
+    return cmp * dir;
+  });
+
+  document.querySelectorAll('#tablaVentas th.sortable').forEach(th=>{
+    th.classList.toggle('sorted', th.dataset.campo === campo);
+    const arrow = th.dataset.campo === campo ? (dir < 0 ? '▼' : '▲') : '';
+    th.querySelector('.arrow').textContent = arrow;
+  });
+
+  document.getElementById('tablaVentasBody').innerHTML = filas.map(filaVentaHTML).join('');
+  document.getElementById('ventasContador').textContent =
+    filas.length === ventasCache.length
+      ? `${ventasCache.length} ventas`
+      : `Mostrando ${filas.length} de ${ventasCache.length} ventas`;
+}
+
+function filaVentaHTML(x){
+  const { venta, stats } = x;
+  const esVaca = esVentaDeVacas(stats);
+  const indice = calcularIndiceTotal(stats).puntaje;
+  const clase = claseIndice(indice);
+  const cat = categoriaDominante(stats);
+  const rendColor = colorRendimiento(stats.rendimientoJaula);
+  return `
+    <tr class="${esVaca ? 'vacas-fila' : ''}" onclick="abrirDetalleVenta('${venta.id}')">
+      <td>${fmtFecha(venta.fecha)}</td>
+      <td>${venta.frigorifico || '—'}${esVaca ? ' <span class="badge badge-vaca">🐄</span>' : ''}</td>
+      <td>${CLASIFICACION[cat] ? CLASIFICACION[cat].nombre : (cat || '—')}</td>
+      <td>${stats.nAnimales}</td>
+      <td class="num">${fmtKg(stats.kgTotalRes)}</td>
+      <td class="num">${stats.kgVivoTotal ? fmtKg(stats.kgVivoTotal) : '—'}</td>
+      <td class="num">${stats.kgVivoPromedio ? stats.kgVivoPromedio.toFixed(0)+' kg' : '—'}</td>
+      <td class="num" ${rendColor ? `style="color:${rendColor};font-weight:700;"` : ''}>${stats.rendimientoJaula !== null ? stats.rendimientoJaula.toFixed(1)+'%' : '—'}</td>
+      <td class="num"><span class="badge badge-${clase.color}">${indice.toFixed(0)}</span></td>
+    </tr>`;
 }
 
 function abrirDetalleVenta(id){
@@ -1767,6 +1947,7 @@ function renderGraficosDetalle(stats){
 
 // ---------------- COMPARAR VENTAS ----------------
 let comparadorSeleccion = [];
+let comparadorInicializado = false;
 
 // Puntaje general 0-100 por venta = ÍNDICE DE CALIDAD TOTAL (definido arriba).
 // Se usaba acá y en las otras secciones con fórmulas distintas; ahora hay uno solo.
@@ -1783,8 +1964,9 @@ function renderComparar(ventas){
     return;
   }
   const ordenadas = [...ventas].sort((a,b)=> new Date(b.fecha) - new Date(a.fecha));
-  if(comparadorSeleccion.length === 0){
-    comparadorSeleccion = ordenadas.map(v=>v.id); // por defecto, todas
+  if(!comparadorInicializado){
+    comparadorSeleccion = ordenadas.map(v=>v.id); // por defecto, todas (solo la primera vez)
+    comparadorInicializado = true;
   }
   // saca de la selección ids que ya no existen (venta borrada)
   comparadorSeleccion = comparadorSeleccion.filter(id=> ventas.some(v=>v.id===id));
