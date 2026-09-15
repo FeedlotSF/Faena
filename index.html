@@ -1171,43 +1171,48 @@ function renderResumen(ventas){
   }
 
   const allStats = ventas.map(v=>({ venta:v, stats: calcularStatsVenta(v) }));
-  const totalAnimales = allStats.reduce((s,x)=> s + x.stats.nAnimales, 0);
-  const totalKg = allStats.reduce((s,x)=> s + x.stats.kgTotalRes, 0);
+  // Las ventas de vacas (ej: Pirismundi) tienen otros parámetros: se EXCLUYEN de
+  // los KPIs superiores y de la composición global, pero siguen en el gráfico de puntos.
+  const statsBase = allStats.filter(x=> !esVentaDeVacas(x.stats));
+  const ventasVacunas = allStats.length - statsBase.length;
+
+  const totalAnimales = statsBase.reduce((s,x)=> s + x.stats.nAnimales, 0);
+  const totalKg = statsBase.reduce((s,x)=> s + x.stats.kgTotalRes, 0);
   const pesoPromGlobal = totalAnimales ? totalKg/totalAnimales : 0;
 
   // índice de calidad global ponderado
   let sumaLetras = {A:0,B:0,C:0,D:0}, nMediasGlobal=0;
-  allStats.forEach(x=>{
+  statsBase.forEach(x=>{
     Object.keys(sumaLetras).forEach(l=> sumaLetras[l] += x.stats.distLetra[l]||0);
     nMediasGlobal += x.stats.nMedias;
   });
-  const indiceGlobal = calcularIndiceTotal(agregarStatsParaIndice(allStats)).puntaje;
-  const claseGlobal = claseIndice(indiceGlobal);
+  const indiceGlobal = statsBase.length ? calcularIndiceTotal(agregarStatsParaIndice(statsBase)).puntaje : null;
+  const claseGlobal = indiceGlobal !== null ? claseIndice(indiceGlobal) : null;
 
-  const rendimientos = allStats.filter(x=>x.stats.rendimientoJaula !== null).map(x=>x.stats.rendimientoJaula);
+  const rendimientos = statsBase.filter(x=>x.stats.rendimientoJaula !== null).map(x=>x.stats.rendimientoJaula);
   const rendProm = rendimientos.length ? rendimientos.reduce((a,b)=>a+b,0)/rendimientos.length : null;
 
   el.innerHTML = `
     <div class="grid grid-4 mb16">
       <div class="stat-tile">
         <div class="stat-label">Ventas registradas</div>
-        <div class="stat-value">${ventas.length}</div>
-        <div class="stat-note">${totalAnimales} animales en total</div>
+        <div class="stat-value">${statsBase.length}</div>
+        <div class="stat-note">${totalAnimales} animales en total${ventasVacunas ? ` · ${ventasVacunas} de vacas excluidas de estas métricas` : ''}</div>
       </div>
       <div class="stat-tile blood">
         <div class="stat-label">Índice de calidad global</div>
-        <div class="stat-value">${indiceGlobal.toFixed(0)}<span style="font-size:16px;">/100</span></div>
-        <div class="stat-note">${claseGlobal.label} — tipificación + homogeneidad + rendimiento + contusiones</div>
+        <div class="stat-value">${indiceGlobal !== null ? indiceGlobal.toFixed(0) : '—'}<span style="font-size:16px;">${indiceGlobal !== null ? '/100' : ''}</span></div>
+        <div class="stat-note">${claseGlobal ? claseGlobal.label + ' — ' : ''}tipificación + homogeneidad + rendimiento + contusiones${ventasVacunas ? ' · sin vacas' : ''}</div>
       </div>
       <div class="stat-tile ochre">
         <div class="stat-label">Peso promedio por res</div>
         <div class="stat-value">${pesoPromGlobal.toFixed(0)}<span style="font-size:16px;"> kg</span></div>
-        <div class="stat-note">Promedio de res entera, todas las ventas</div>
+        <div class="stat-note">Promedio de res entera${ventasVacunas ? ', sin ventas de vacas' : ''}, todas las ventas</div>
       </div>
       <div class="stat-tile">
         <div class="stat-label">Rendimiento promedio</div>
         <div class="stat-value">${rendProm !== null ? rendProm.toFixed(1)+'%' : '—'}</div>
-        <div class="stat-note">${rendProm !== null ? 'kg res / kg vivo, ventas con dato' : 'Cargá peso de jaula para verlo'}</div>
+        <div class="stat-note">${rendProm !== null ? 'kg res / kg vivo, ventas con dato' + (ventasVacunas ? ' (sin vacas)' : '') : 'Cargá peso de jaula para verlo'}</div>
       </div>
     </div>
 
@@ -1217,7 +1222,7 @@ function renderResumen(ventas){
         <div class="chart-box tall" style="height:320px;"><canvas id="chartEvolCalidad"></canvas></div>
       </div>
       <div class="card">
-        <div class="card-head"><div><h3>Composición global de tipificación</h3><p class="muted small">Todas las ventas cargadas, por sub-grado real del certificado</p></div></div>
+        <div class="card-head"><div><h3>Composición global de tipificación</h3><p class="muted small">${ventasVacunas ? '<em>Solo ventas novillo/novillito — excluye ' + ventasVacunas + ' de vacas.</em> ' : ''}Todas las ventas, por sub-grado real del certificado</p></div></div>
         <div class="chart-box"><canvas id="chartGlobalLetra"></canvas></div>
       </div>
     </div>
@@ -1432,7 +1437,7 @@ function renderResumen(ventas){
 
   // gráfico dona tipificación global por sub-grado (A1/A2/B1/B2 separados, C y D agrupados)
   const distTipifGlobal = {};
-  allStats.forEach(x=>{
+  statsBase.forEach(x=>{
     Object.entries(x.stats.distTipif || {}).forEach(([k,c])=>{
       const key = (k || 'S/D').toUpperCase();
       distTipifGlobal[key] = (distTipifGlobal[key]||0) + c;
@@ -1462,6 +1467,9 @@ function renderResumen(ventas){
   const totalDonut = slicesDonut.reduce((s,g)=> s+g.value, 0);
 
   const ctx2 = document.getElementById('chartGlobalLetra');
+  if(slicesDonut.length === 0){
+    ctx2.parentElement.innerHTML = `<div class="empty" style="padding:30px 10px;"><p class="muted">Sin ventas de novillos/novillitos para analizar.<br>Las ventas de vacas no se incluyen en este gráfico.</p></div>`;
+  }else{
   chartInstances['globalLetra'] = new Chart(ctx2, {
     type:'doughnut',
     data:{
@@ -1482,6 +1490,7 @@ function renderResumen(ventas){
       }
     }
   });
+  }
 }
 
 // Ventas dominadas por vacas (categoría VA): se pintan distinto para diferenciarlas a simple vista
