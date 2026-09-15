@@ -280,7 +280,11 @@ tr:hover td{background:var(--bone-2);}
 }
 .sale-row:hover{border-color:var(--ink-soft);}
 .sale-row + .sale-row{margin-top:10px;}
+.sale-row.vacas{border-color:var(--blood);background:#F8EAE5;}
+.sale-row.vacas:hover{border-color:var(--blood-dark);}
+.sale-row.vacas .sale-date-block{background:var(--blood);}
 .sale-main{display:flex;align-items:center;gap:14px;flex-wrap:wrap;}
+.badge-vaca{background:var(--blood);color:#FFF3EE;}
 .sale-date-block{
   font-family:'Roboto Slab',serif;
   font-weight:700;
@@ -296,6 +300,8 @@ tr:hover td{background:var(--bone-2);}
 .sale-meta{font-size:12.5px;color:var(--ink-soft);}
 .sale-metrics{display:flex;gap:18px;font-size:12.5px;}
 .sale-metrics b{font-family:'Roboto Slab',serif;font-size:15px;display:block;color:var(--ink);}
+.sale-metrics > div{text-align:center;}
+.sale-metrics .metric-label{display:block;font-size:12.5px;color:var(--ink-soft);margin-top:2px;}
 
 /* ---------- INFO BOX ---------- */
 .infobox{
@@ -1211,7 +1217,7 @@ function renderResumen(ventas){
         <div class="chart-box tall" style="height:320px;"><canvas id="chartEvolCalidad"></canvas></div>
       </div>
       <div class="card">
-        <div class="card-head"><div><h3>Composición global de tipificación</h3><p class="muted small">Todas las ventas cargadas, por letra</p></div></div>
+        <div class="card-head"><div><h3>Composición global de tipificación</h3><p class="muted small">Todas las ventas cargadas, por sub-grado real del certificado</p></div></div>
         <div class="chart-box"><canvas id="chartGlobalLetra"></canvas></div>
       </div>
     </div>
@@ -1377,25 +1383,66 @@ function renderResumen(ventas){
     }
   });
 
-  // gráfico dona letra global
-  const totalLetras = sumaLetras.A + sumaLetras.B + sumaLetras.C + sumaLetras.D || 1;
-  const pctLetra = l=> (sumaLetras[l]/totalLetras*100).toFixed(0)+'%';
+  // gráfico dona tipificación global por sub-grado (A1/A2/B1/B2 separados, C y D agrupados)
+  const distTipifGlobal = {};
+  allStats.forEach(x=>{
+    Object.entries(x.stats.distTipif || {}).forEach(([k,c])=>{
+      const key = (k || 'S/D').toUpperCase();
+      distTipifGlobal[key] = (distTipifGlobal[key]||0) + c;
+    });
+  });
+  const GRUPOS_TIPIF_DONA = [
+    { keys:['A1'], label:'A1 — máxima calidad', color:'#1F3D14' },
+    { keys:['A2'], label:'A2 — muy buena', color:'#3A5C2E' },
+    { keys:['A'],  label:'A — buena', color:'#4C5B3D' },
+    { keys:['B1'], label:'B1 — estándar alta', color:'#9A6B24' },
+    { keys:['B'],  label:'B — estándar', color:'#B8863B' },
+    { keys:['B2'], label:'B2 — estándar', color:'#C99B4A' },
+    { keys:['C1','C2','C'], label:'C — por debajo del estándar', color:'#8C2F1E' },
+    { keys:['D'],  label:'D — deficiente', color:'#6E2317' }
+  ];
+  const slicesDonut = [];
+  GRUPOS_TIPIF_DONA.forEach(g=>{
+    let cnt = 0;
+    g.keys.forEach(k=>{ cnt += distTipifGlobal[k] || 0; });
+    if(cnt > 0) slicesDonut.push({ label:g.label, value:cnt, color:g.color });
+  });
+  const clavesConocidas = new Set(GRUPOS_TIPIF_DONA.flatMap(g=>g.keys));
+  const otrosDonut = Object.entries(distTipifGlobal)
+    .filter(([k])=> !clavesConocidas.has(k))
+    .reduce((s,[,c])=> s+c, 0);
+  if(otrosDonut > 0) slicesDonut.push({ label:'Otros', value:otrosDonut, color:'#8A8377' });
+  const totalDonut = slicesDonut.reduce((s,g)=> s+g.value, 0);
+
   const ctx2 = document.getElementById('chartGlobalLetra');
   chartInstances['globalLetra'] = new Chart(ctx2, {
     type:'doughnut',
     data:{
-      labels:[`A (premium) · ${pctLetra('A')}`,`B (estándar) · ${pctLetra('B')}`,`C (bajo) · ${pctLetra('C')}`,`D (deficiente) · ${pctLetra('D')}`],
+      labels: slicesDonut.map(g=> g.label),
       datasets:[{
-        data:[sumaLetras.A, sumaLetras.B, sumaLetras.C, sumaLetras.D],
-        backgroundColor:['#4C5B3D','#B8863B','#8C2F1E','#6E2317'],
+        data: slicesDonut.map(g=> g.value),
+        backgroundColor: slicesDonut.map(g=> g.color),
         borderWidth:2, borderColor:'#FAF7F0'
       }]
     },
     options:{
       responsive:true, maintainAspectRatio:false,
-      plugins:{ legend:{ position:'bottom', labels:{ boxWidth:12, font:{size:11.5} } } }
+      plugins:{
+        legend:{ position:'bottom', labels:{ boxWidth:12, font:{size:11.5} } },
+        tooltip:{ callbacks:{
+          label:(c)=> `${c.label}: ${c.parsed} reses (${(c.parsed/totalDonut*100).toFixed(1)}%)`
+        } }
+      }
     }
   });
+}
+
+// Ventas dominadas por vacas (categoría VA): se pintan distinto para diferenciarlas a simple vista
+function esVentaDeVacas(stats){
+  const d = stats.distClasifAnimales || {};
+  const vacas = d['VA'] || 0;
+  const total = Object.values(d).reduce((a,b)=>a+b, 0);
+  return total > 0 && (vacas/total) >= 0.5;
 }
 
 function saleRowHTML(venta, stats){
@@ -1403,20 +1450,22 @@ function saleRowHTML(venta, stats){
   const indice = calcularIndiceTotal(stats).puntaje;
   const clase = claseIndice(indice);
   const resCat = resumenCategoriasAnimales(stats);
+  const esVaca = esVentaDeVacas(stats);
+  const colorIndice = { A:'#FFFFFF', B:'#FFF6E0', C:'#FFEDE7', D:'#F7E9E1' }[clase.color] || '#FFFFFF';
   return `
-    <div class="sale-row" onclick="abrirDetalleVenta('${venta.id}')">
+    <div class="sale-row ${esVaca ? 'vacas' : ''}" onclick="abrirDetalleVenta('${venta.id}')">
       <div class="sale-main">
         <div class="sale-date-block">${fc.dia}<small>${fc.mes}</small></div>
         <div>
-          <div style="font-weight:700;">${venta.frigorifico || 'Frigorífico sin nombre'}</div>
+          <div style="font-weight:700;">${venta.frigorifico || 'Frigorífico sin nombre'}${esVaca ? ' <span class="badge badge-vaca">🐄 Vacas</span>' : ''}</div>
           <div class="sale-meta">${resCat || (stats.nAnimales+' animales')}</div>
         </div>
       </div>
       <div class="sale-metrics">
-        <div><b>${fmtKg(stats.kgTotalRes)}</b>total</div>
-        <div><b>${stats.kgPromedioAnimal.toFixed(0)} kg</b>prom/animal</div>
-        <div><b class="badge badge-${clase.color}" style="font-size:14px;">${indice.toFixed(0)}</b>índice calidad</div>
-        ${stats.rendimientoJaula !== null ? `<div><b>${stats.rendimientoJaula.toFixed(1)}%</b>rendimiento</div>` : ''}
+        <div><b>${fmtKg(stats.kgTotalRes)}</b><span class="metric-label">total</span></div>
+        <div><b>${stats.kgPromedioAnimal.toFixed(0)} kg</b><span class="metric-label">prom/animal</span></div>
+        <div><b class="badge badge-${clase.color}" style="font-size:14px;color:${colorIndice};">${indice.toFixed(0)}</b><span class="metric-label">índice calidad</span></div>
+        ${stats.rendimientoJaula !== null ? `<div><b>${stats.rendimientoJaula.toFixed(1)}%</b><span class="metric-label">rendimiento</span></div>` : ''}
       </div>
     </div>`;
 }
@@ -1782,7 +1831,7 @@ function renderComparadorBody(ventas){
         <tbody>
           ${items.map((x,i)=>{
             const sem = claseSemaforo(x.puntaje);
-            return `<tr>
+            return `<tr style="cursor:pointer;" title="Ver detalle de la venta" onclick="abrirDetalleVenta('${x.venta.id}')">
               <td>${medallas[i] || (i+1)}</td>
               <td><strong>${fmtFecha(x.venta.fecha)}</strong><br><span class="muted small">${x.venta.frigorifico||'—'}</span></td>
               <td><span class="badge badge-${sem.color}" style="font-size:14px;">${x.puntaje.toFixed(0)}</span></td>
@@ -1796,6 +1845,7 @@ function renderComparadorBody(ventas){
           }).join('')}
         </tbody>
       </table>
+      <p class="muted small mt8" style="text-align:right;">💡 Hacé clic en una fila para ver el detalle de esa venta.</p>
     </div>
 
     <div class="card mb16">
@@ -1828,9 +1878,12 @@ function renderComparadorBody(ventas){
       },
       options:{
         responsive:true, maintainAspectRatio:false, indexAxis:'y',
+        onClick: function(evt, els){
+          if(els.length && items[els[0].index]) abrirDetalleVenta(items[els[0].index].venta.id);
+        },
         plugins:{
           legend:{display:false},
-          tooltip:{ callbacks:{ label:(c)=> `Puntaje general: ${c.parsed.x.toFixed(0)}/100` } }
+          tooltip:{ callbacks:{ label:(c)=> `Puntaje general: ${c.parsed.x.toFixed(0)}/100 — clic para ver detalle` } }
         },
         scales:{
           x:{ min:0, max:100, grid:{color:'#E4DDCC'}, title:{display:true,text:'Puntaje general (0-100)'} },
@@ -1854,6 +1907,9 @@ function renderComparadorBody(ventas){
       },
       options:{
         responsive:true, maintainAspectRatio:false,
+        onClick: function(evt, els){
+          if(els.length && items[els[0].index]) abrirDetalleVenta(items[els[0].index].venta.id);
+        },
         scales:{
           x:{ stacked:true, grid:{display:false}, ticks:{ autoSkip:false, maxRotation:35, minRotation:items.length>4?35:0, font:{size:11} } },
           y:{ stacked:true, max:100, grid:{color:'#E4DDCC'}, title:{display:true,text:'% de medias reses'} }
@@ -1870,7 +1926,7 @@ function renderComparadorBody(ventas){
       type:'scatter',
       data:{
         datasets:[{
-          data: conRend.map(x=>({ x:x.stats.kgPromedioAnimal, y:x.stats.rendimientoJaula, label: fmtFecha(x.venta.fecha)+' · '+(x.venta.frigorifico||'') })),
+          data: conRend.map(x=>({ x:x.stats.kgPromedioAnimal, y:x.stats.rendimientoJaula, _id:x.venta.id, label: fmtFecha(x.venta.fecha)+' · '+(x.venta.frigorifico||'') })),
           backgroundColor:'#8C2F1E',
           pointRadius:7,
           pointHoverRadius:9
@@ -1878,9 +1934,15 @@ function renderComparadorBody(ventas){
       },
       options:{
         responsive:true, maintainAspectRatio:false,
+        onClick: function(evt, els){
+          if(els.length){
+            const raw = els[0].element.$context.raw;
+            if(raw && raw._id) abrirDetalleVenta(raw._id);
+          }
+        },
         plugins:{
           legend:{display:false},
-          tooltip:{ callbacks:{ label:(c)=> `${c.raw.label}: ${c.parsed.x.toFixed(0)} kg, ${c.parsed.y.toFixed(1)}% rend.` } }
+          tooltip:{ callbacks:{ label:(c)=> `${c.raw.label}: ${c.parsed.x.toFixed(0)} kg, ${c.parsed.y.toFixed(1)}% rend. — clic para ver detalle` } }
         },
         scales:{
           x:{ title:{display:true, text:'Kg promedio por animal'}, grid:{color:'#E4DDCC'} },
