@@ -276,6 +276,14 @@ tr:hover td{background:var(--bone-2);}
   cursor:pointer;
 }
 .pill.active{border-color:var(--blood);color:var(--blood);background:#F8EDEA;}
+.pill-grupo{margin-bottom:12px;}
+.pill-grupo:last-child{margin-bottom:0;}
+.pill-grupo-label{
+  font-size:11.5px;font-weight:700;color:var(--ink-soft);
+  letter-spacing:.4px;margin-bottom:6px;
+  text-transform:uppercase;
+}
+.pill-grupo-label .pill-grupo-total{margin-left:6px;font-weight:600;color:var(--line);}
 
 /* ---------- EMPTY STATE ---------- */
 .empty{
@@ -1263,11 +1271,11 @@ function renderResumen(ventas){
   const COLORES_FRIGO = ['#8C2F1E','#4C5B3D','#B8863B','#2E6B8A','#9B4DCA','#D64550','#1A8A6B','#C47A24'];
   const todosOrdenados = [...allStats].sort((a,b)=> new Date(a.venta.fecha) - new Date(b.venta.fecha));
 
-  // filtrar: mostrar ventas de los últimos 4 meses; si hay menos de 2, mostrar todas
+  // filtrar: mostrar hasta ~14 meses de historia; si hay menos de 2 ventas, mostrar todas
   const hoy = new Date();
-  const cuatroMesesAtras = new Date(hoy);
-  cuatroMesesAtras.setMonth(cuatroMesesAtras.getMonth() - 4);
-  const ventasRecientes = todosOrdenados.filter(x=> x.venta.fecha && new Date(x.venta.fecha) >= cuatroMesesAtras);
+  const fechaLimite = new Date(hoy);
+  fechaLimite.setMonth(fechaLimite.getMonth() - 14);
+  const ventasRecientes = todosOrdenados.filter(x=> x.venta.fecha && new Date(x.venta.fecha) >= fechaLimite);
   const ventasFiltradas = ventasRecientes.length >= 2 ? ventasRecientes : todosOrdenados;
 
   // agrupar por frigorífico
@@ -1604,6 +1612,28 @@ function renderVentas(ventas){
       <div class="card-head"><h3>Todas las ventas</h3>
         <p class="muted small" id="ventasContador"></p>
       </div>
+      <div class="grid grid-4 mb16">
+        <div class="stat-tile">
+          <div class="stat-label">Ventas del filtro</div>
+          <div class="stat-value"><span id="vk-ventas">0</span></div>
+          <div class="stat-note" id="vk-ventas-nota"></div>
+        </div>
+        <div class="stat-tile blood">
+          <div class="stat-label">Índice de calidad</div>
+          <div class="stat-value"><span id="vk-indice">—</span></div>
+          <div class="stat-note" id="vk-indice-nota"></div>
+        </div>
+        <div class="stat-tile ochre">
+          <div class="stat-label">Peso promedio por res</div>
+          <div class="stat-value"><span id="vk-peso">—</span><span style="font-size:16px;"> kg</span></div>
+          <div class="stat-note" id="vk-peso-nota"></div>
+        </div>
+        <div class="stat-tile">
+          <div class="stat-label">Rendimiento promedio</div>
+          <div class="stat-value"><span id="vk-rend">—</span></div>
+          <div class="stat-note" id="vk-rend-nota"></div>
+        </div>
+      </div>
       <div class="ventas-filtros">
         <div class="field">
           <label for="filtroCat">Categoría</label>
@@ -1708,6 +1738,8 @@ function pintarListaVentas(){
     return cmp * dir;
   });
 
+  actualizarKpisVentas(filas);
+
   VENTAS_CAMPOS.forEach(c=>{
     const btn = document.querySelector(`.ventas-columnas .sort-btn[data-campo="${c.campo}"]`);
     if(!btn) return;
@@ -1721,6 +1753,43 @@ function pintarListaVentas(){
     filas.length === ventasCache.length
       ? `${ventasCache.length} ventas`
       : `Mostrando ${filas.length} de ${ventasCache.length} ventas`;
+}
+
+// KPIs interactivos de la sección Ventas: se recalculan con lo que muestra el filtro.
+// Las ventas de vacas se excluyen igual que en el Resumen, para no distorsionar el índice.
+function actualizarKpisVentas(filas){
+  const kpiBase = filas.filter(x=> !esVentaDeVacas(x.stats));
+  const nVacunas = filas.length - kpiBase.length;
+
+  const totalAnimales = kpiBase.reduce((s,x)=> s + x.stats.nAnimales, 0);
+  const totalKg = kpiBase.reduce((s,x)=> s + x.stats.kgTotalRes, 0);
+  const pesoProm = totalAnimales ? totalKg/totalAnimales : 0;
+
+  const indice = kpiBase.length ? calcularIndiceTotal(agregarStatsParaIndice(kpiBase)).puntaje : null;
+  const clase = indice !== null ? claseIndice(indice) : null;
+
+  const rends = kpiBase.filter(x=>x.stats.rendimientoJaula !== null).map(x=>x.stats.rendimientoJaula);
+  const rendProm = rends.length ? rends.reduce((a,b)=>a+b,0)/rends.length : null;
+
+  const elVentas = document.getElementById('vk-ventas');
+  if(!elVentas) return;
+  document.getElementById('vk-ventas').textContent = filas.length;
+  document.getElementById('vk-ventas-nota').textContent = filas.length === ventasCache.length
+    ? `${totalAnimales} animales`
+    : `${filas.length} de ${ventasCache.length} ventas · ${totalAnimales} animales`;
+
+  document.getElementById('vk-indice').innerHTML = indice !== null ? indice.toFixed(0)+'<span style="font-size:16px;">/100</span>' : '—';
+  document.getElementById('vk-indice-nota').textContent = clase ? clase.label : (filas.length ? '' : 'Sin ventas');
+
+  document.getElementById('vk-peso').textContent = pesoProm ? pesoProm.toFixed(0) : '—';
+  document.getElementById('vk-peso-nota').textContent = pesoProm
+    ? 'kg res entera promedio' + (nVacunas ? ' (sin vacas)' : '')
+    : (filas.length ? 'Sin animales' : '');
+
+  document.getElementById('vk-rend').textContent = rendProm !== null ? rendProm.toFixed(1)+'%' : '—';
+  document.getElementById('vk-rend-nota').textContent = rendProm !== null
+    ? 'kg res / kg vivo' + (nVacunas ? ' (sin vacas)' : '')
+    : (filas.length ? 'Sin peso de jaula' : '');
 }
 
 function abrirDetalleVenta(id){
@@ -1950,6 +2019,37 @@ function claseSemaforo(puntaje){
   return { emoji:'🔴', label:'Atención', color:'C' };
 }
 
+// Pills de "Elegí las ventas": agrupadas por mes, con etiqueta corta día · frigorífico
+function gruposPills(ventas){
+  const MESES = ['ENE','FEB','MAR','ABR','MAY','JUN','JUL','AGO','SEP','OCT','NOV','DIC'];
+  const grupos = [];
+  ventas.forEach(v=>{
+    const d = v.fecha ? new Date(v.fecha) : null;
+    const key = d ? d.getFullYear()+'-'+d.getMonth() : 's/f';
+    let g = grupos.find(x=>x.key===key);
+    if(!g){
+      g = { key, label: d ? MESES[d.getMonth()]+' \''+String(d.getFullYear()).slice(2) : 'Sin fecha', items:[] };
+      grupos.push(g);
+    }
+    g.items.push(v);
+  });
+  return grupos.map(g=>{
+    const activos = g.items.filter(v=> comparadorSeleccion.includes(v.id)).length;
+    const totales = g.items.length;
+    return `<div class="pill-grupo">
+      <div class="pill-grupo-label">${g.label}<span class="pill-grupo-total">${activos}/${totales}</span></div>
+      <div class="pill-row">
+        ${g.items.map(v=>{
+          const d = v.fecha ? new Date(v.fecha) : null;
+          const dia = d ? String(d.getDate()).padStart(2,'0') : '?';
+          const activo = comparadorSeleccion.includes(v.id);
+          return `<div class="pill ${activo?'active':''}" data-pill-id="${v.id}">${dia} · ${v.frigorifico||'s/frig.'}</div>`;
+        }).join('')}
+      </div>
+    </div>`;
+  }).join('');
+}
+
 function renderComparar(ventas){
   const el = document.getElementById('viewComparar');
   if(ventas.length < 2){
@@ -1972,11 +2072,8 @@ function renderComparar(ventas){
           <button class="btn btn-sm btn-ghost" id="btnCompNinguna">Ninguna</button>
         </div>
       </div>
-      <div class="pill-row" id="pillsComparar">
-        ${ordenadas.map(v=>{
-          const activo = comparadorSeleccion.includes(v.id);
-          return `<div class="pill ${activo?'active':''}" data-pill-id="${v.id}">${fmtFecha(v.fecha)} · ${v.frigorifico||'s/frigorífico'}</div>`;
-        }).join('')}
+      <div id="pillsComparar">
+        ${gruposPills(ordenadas)}
       </div>
     </div>
     <div id="comparadorBody"></div>
