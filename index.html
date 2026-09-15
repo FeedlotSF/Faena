@@ -232,12 +232,16 @@ tr:hover td{background:var(--bone-2);}
 .ventas-filtros .field label{font-size:12px;margin-bottom:4px;}
 .ventas-filtros select,.ventas-filtros input{width:100%;min-width:0;}
 #btnLimpiarFiltros{flex:none;align-self:flex-end;}
-.ventas-sortbar{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px;}
+.ventas-columnas{display:flex;justify-content:space-between;gap:12px;margin-bottom:6px;padding:6px 16px;align-items:flex-end;flex-wrap:wrap;width:100%;box-sizing:border-box;}
+.vc-left{display:flex;gap:8px;align-items:center;flex:none;}
+.vc-right{display:grid;grid-template-columns:96px 112px 96px 118px 104px 100px;gap:14px;justify-content:end;align-items:center;flex:none;}
+.vc-spacer{height:1px;}
+.vc-spacer::after{content:'';}
 .sort-btn{
   font-family:'Inter',sans-serif;font-size:12px;font-weight:600;
   padding:5px 10px;border-radius:3px;
   border:1px solid var(--line);background:var(--paper);color:var(--ink-soft);
-  cursor:pointer;
+  cursor:pointer;white-space:nowrap;width:100%;text-align:center;
 }
 .sort-btn:hover{color:var(--ink);}
 .sort-btn.active{border-color:var(--blood);color:var(--blood);background:rgba(150,47,24,.06);}
@@ -314,7 +318,7 @@ tr:hover td{background:var(--bone-2);}
 }
 .sale-date-block small{display:block;font-family:'Inter',sans-serif;font-weight:600;font-size:10px;opacity:.75;}
 .sale-meta{font-size:12.5px;color:var(--ink-soft);}
-.sale-metrics{display:flex;gap:18px;font-size:12.5px;}
+.sale-metrics{display:grid;grid-template-columns:96px 112px 96px 118px 104px 100px;gap:14px;font-size:12.5px;justify-content:end;flex:none;}
 .sale-metrics b{font-family:'Roboto Slab',serif;font-size:15px;display:block;color:var(--ink);}
 .sale-metrics > div{text-align:center;}
 .sale-metrics .metric-label{display:block;font-size:12.5px;color:var(--ink-soft);margin-top:2px;}
@@ -1238,7 +1242,7 @@ function renderResumen(ventas){
         <div class="chart-box tall" style="height:320px;"><canvas id="chartEvolCalidad"></canvas></div>
       </div>
       <div class="card">
-        <div class="card-head"><div><h3>Composición global de tipificación</h3><p class="muted small">${ventasVacunas ? '<em>Solo ventas novillo/novillito — excluye ' + ventasVacunas + ' de vacas.</em> ' : ''}Todas las ventas, por sub-grado real del certificado</p></div></div>
+        <div class="card-head"><div><h3>Composición global de tipificación</h3><p class="muted small">Solo Novillos</p></div></div>
         <div class="chart-box"><canvas id="chartGlobalLetra"></canvas></div>
       </div>
     </div>
@@ -1461,11 +1465,11 @@ function renderResumen(ventas){
   });
   const GRUPOS_TIPIF_DONA = [
     { keys:['A1'], label:'A1 — máxima calidad', color:'#1F3D14' },
-    { keys:['A2'], label:'A2 — muy buena', color:'#3A5C2E' },
+    { keys:['A2','A3'], label:'A2 — muy buena', color:'#3A5C2E' },
     { keys:['A'],  label:'A — buena', color:'#4C5B3D' },
     { keys:['B1'], label:'B1 — estándar alta', color:'#9A6B24' },
     { keys:['B'],  label:'B — estándar', color:'#B8863B' },
-    { keys:['B2','B3'], label:'B2 — estándar', color:'#C99B4A' },
+    { keys:['B2','B3','B4'], label:'B2 — estándar', color:'#C99B4A' },
     { keys:['C1','C2','C'], label:'C — por debajo del estándar', color:'#8C2F1E' },
     { keys:['D'],  label:'D — deficiente', color:'#6E2317' }
   ];
@@ -1547,10 +1551,10 @@ function saleRowHTML(venta, stats){
       <div class="sale-metrics">
         <div><b>${fmtKg(stats.kgTotalRes)}</b><span class="metric-label">kg res total</span></div>
         <div><b>${stats.kgPromedioAnimal.toFixed(0)} kg</b><span class="metric-label">kg prom res/cab</span></div>
-        ${tienePV ? `<div><b>${fmtKg(stats.kgVivoTotal)}</b><span class="metric-label">kg PV</span></div>` : ''}
-        ${tienePV ? `<div><b>${stats.kgVivoPromedio.toFixed(0)} kg</b><span class="metric-label">kg prom PV/cab</span></div>` : ''}
+        <div><b>${tienePV ? fmtKg(stats.kgVivoTotal) : '—'}</b><span class="metric-label">kg PV</span></div>
+        <div><b>${tienePV ? stats.kgVivoPromedio.toFixed(0)+' kg' : '—'}</b><span class="metric-label">kg prom PV/cab</span></div>
         <div><b class="badge badge-${clase.color}" style="font-size:14px;color:${colorIndice};">${indice.toFixed(0)}</b><span class="metric-label">índice calidad</span></div>
-        ${stats.rendimientoJaula !== null ? `<div><b style="color:${rendColor || 'var(--ink)'};font-size:16px;">${stats.rendimientoJaula.toFixed(1)}%</b><span class="metric-label">rendimiento</span></div>` : ''}
+        <div><b style="color:${rendColor || 'var(--ink)'};font-size:16px;">${stats.rendimientoJaula !== null ? stats.rendimientoJaula.toFixed(1)+'%' : '—'}</b><span class="metric-label">rendimiento</span></div>
       </div>
     </div>`;
 }
@@ -1563,14 +1567,10 @@ let ventasCache = [];
 
 const VENTAS_CAMPOS = [
   { campo:'fecha', etiqueta:'Fecha' },
-  { campo:'frigorifico', etiqueta:'Frigorífico' },
-  { campo:'categoria', etiqueta:'Categoría' },
   { campo:'nAnimales', etiqueta:'Animales' },
-  { campo:'kgTotalRes', etiqueta:'Kg res' },
-  { campo:'kgVivoTotal', etiqueta:'Kg PV' },
-  { campo:'kgVivoPromedio', etiqueta:'Kg prom PV/cab' },
-  { campo:'rendimiento', etiqueta:'Rendimiento' },
-  { campo:'indice', etiqueta:'Índice' }
+  { campo:'kgVivoPromedio', etiqueta:'Kg PV/cab' },
+  { campo:'indice', etiqueta:'Índice calidad' },
+  { campo:'rendimiento', etiqueta:'Rendimiento' }
 ];
 
 // Categoría dominante (código) de una venta, para el filtro
@@ -1629,8 +1629,19 @@ function renderVentas(ventas){
         </div>
         <button class="btn btn-sm btn-ghost" id="btnLimpiarFiltros">Limpiar</button>
       </div>
-      <div class="ventas-sortbar" id="ventasSortbar">
-        ${VENTAS_CAMPOS.map(c=> `<button class="sort-btn" data-campo="${c.campo}">${c.etiqueta}</button>`).join('')}
+      <div class="ventas-columnas">
+        <div class="vc-left">
+          <button class="sort-btn" data-campo="fecha">Fecha</button>
+          <button class="sort-btn" data-campo="nAnimales">Animales</button>
+        </div>
+        <div class="vc-right">
+          <span class="vc-spacer"></span>
+          <span class="vc-spacer"></span>
+          <span class="vc-spacer"></span>
+          <button class="sort-btn" data-campo="kgVivoPromedio">Kg PV/cab</button>
+          <button class="sort-btn" data-campo="indice">Índice</button>
+          <button class="sort-btn" data-campo="rendimiento">Rendimiento</button>
+        </div>
       </div>
       <div id="listaVentas"></div>
     </div>`;
@@ -1652,13 +1663,13 @@ function renderVentas(ventas){
     ventasOrden = { campo:'fecha', dir:-1 };
     renderVentas(getVentas());
   });
-  document.getElementById('ventasSortbar').addEventListener('click', e=>{
-    const btn = e.target.closest('.sort-btn');
-    if(!btn) return;
-    const campo = btn.dataset.campo;
-    if(ventasOrden.campo === campo) ventasOrden.dir *= -1;
-    else ventasOrden = { campo, dir: -1 };
-    pintarListaVentas();
+  document.querySelectorAll('.ventas-columnas .sort-btn').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const campo = btn.dataset.campo;
+      if(ventasOrden.campo === campo) ventasOrden.dir *= -1;
+      else ventasOrden = { campo, dir: -1 };
+      pintarListaVentas();
+    });
   });
 
   pintarListaVentas();
@@ -1698,7 +1709,8 @@ function pintarListaVentas(){
   });
 
   VENTAS_CAMPOS.forEach(c=>{
-    const btn = document.querySelector(`#ventasSortbar .sort-btn[data-campo="${c.campo}"]`);
+    const btn = document.querySelector(`.ventas-columnas .sort-btn[data-campo="${c.campo}"]`);
+    if(!btn) return;
     const activo = ventasOrden.campo === c.campo;
     btn.classList.toggle('active', activo);
     btn.textContent = c.etiqueta + (activo ? (dir < 0 ? ' ▼' : ' ▲') : '');
