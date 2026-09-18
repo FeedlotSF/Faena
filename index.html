@@ -1080,8 +1080,8 @@ function puntajeContusion(stats){
 
 // ÍNDICE DE CALIDAD TOTAL (0-100): EL único número usado en toda la app,
 // igual en Resumen, Ventas y Comparar.
-// Con peso de jaula:  tipificación 45% · homogeneidad 20% · rendimiento 25% · contusiones 10%
-// Sin peso de jaula:  tipificación 60% · homogeneidad 25% · contusiones 15%
+// Con peso de jaula:  tipificación 70% · homogeneidad 7% · rendimiento 15% · contusiones 8%
+// Sin peso de jaula:  tipificación 82% · homogeneidad 8% · contusiones 10%
 function calcularIndiceTotal(stats){
   const base  = puntajeTipificacion(stats);
   const homog = puntajeHomogeneidad(stats);
@@ -1089,10 +1089,10 @@ function calcularIndiceTotal(stats){
   const cont  = puntajeContusion(stats);
   let puntaje, detalle;
   if(rend !== null){
-    puntaje = base*0.45 + homog*0.20 + rend*0.25 + cont*0.10;
+    puntaje = base*0.70 + homog*0.07 + rend*0.15 + cont*0.08;
     detalle = { base, homog, rend, cont, conRendimiento:true };
   }else{
-    puntaje = base*0.60 + homog*0.25 + cont*0.15;
+    puntaje = base*0.82 + homog*0.08 + cont*0.10;
     detalle = { base, homog, rend:null, cont, conRendimiento:false };
   }
   return { puntaje, detalle };
@@ -2349,22 +2349,22 @@ function renderGlosario(){
       <h3 class="mb16">Índice de calidad (0-100): cómo se compone</h3>
       <p class="muted small mb16">Es <strong>un único número</strong>, igual en todas las secciones (Resumen general, Ventas y Comparar) — así un mismo viaje siempre muestra el mismo valor. Se combinan 4 señales de cada certificado; si falta el peso de jaula, el índice se rearma sin rendimiento.</p>
       <div class="gloss-item">
-        <h4>1) Tipificación — 45% a 60% del índice</h4>
+        <h4>1) Tipificación — 70% a 82% del índice</h4>
         <p class="muted small">Cada media res suma puntos por su sub-grado real del certificado, <strong>no solo por la letra</strong>: A1=100, A2=96, A=92, B1=76, B2=70, B=70, C1=44, C2=36, C=36, D=0. El promedio pesado por cantidad de media reses da el puntaje base. La distancia entre A y B es amplia a propósito: subir una tropa de B a A vale mucho más que desplazarse dentro de B.</p>
       </div>
       <div class="gloss-item">
-        <h4>2) Homogeneidad de tropa — 20-25%</h4>
+        <h4>2) Homogeneidad de tropa — 7-8%</h4>
         <p class="muted small">Usa el coeficiente de variación del peso de las reses. Una tropa pareja (CV ≈ 6%) casi no pierde puntos; una muy despareja (CV ≈ 23% o más) pierde todos los del componente. Castiga lotes armados mezclando corrales o edades muy distintas.</p>
       </div>
       <div class="gloss-item">
-        <h4>3) Rendimiento — 25% (solo con peso de jaula)</h4>
+        <h4>3) Rendimiento — 15% (solo con peso de jaula)</h4>
         <p class="muted small">kg de res / kg vivo, normalizado sobre un rango realista: 46% = 0 pts, 62% = 100 pts. Un rendimiento de 54-58% (típico en feedlot) aporta ~50-75 pts.</p>
       </div>
       <div class="gloss-item">
-        <h4>4) Contusiones — 10-15%</h4>
+        <h4>4) Contusiones — 8-10%</h4>
         <p class="muted small">Si el 0% de las medias reses tiene contusión, aporta los 100 pts; cada 12.5% de medias contusionadas quita todo el componente. Penaliza manejo o transporte previo a faena.</p>
       </div>
-      <p class="muted small mt16">Con peso de jaula el índice se pondera <strong>45% tipificación · 20% homogeneidad · 25% rendimiento · 10% contusiones</strong>. Sin peso de jaula pasa a <strong>60% tipificación · 25% homogeneidad · 15% contusiones</strong>. La clase (Muy buena / Buena / Regular / Baja) sale de cortes: 75+, 55+, 35+ y menor a 35.</p>
+      <p class="muted small mt16">Con peso de jaula el índice se pondera <strong>70% tipificación · 7% homogeneidad · 15% rendimiento · 8% contusiones</strong>. Sin peso de jaula pasa a <strong>82% tipificación · 8% homogeneidad · 10% contusiones</strong>. La clase (Muy buena / Buena / Regular / Baja) sale de cortes: 75+, 55+, 35+ y menor a 35.</p>
     </div>
 
     <div class="card">
