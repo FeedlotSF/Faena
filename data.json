@@ -1,6 +1,6 @@
 {
   "formato": "romaneo_feedlot_datos_v1",
-  "actualizado": "2026-09-18T12:58:37.403Z",
+  "actualizado": "2026-09-18T13:03:36.344Z",
   "ventas": [
     {
       "id": "v_1789386883744_216ssy",
@@ -53473,6 +53473,1370 @@
         }
       ],
       "creado": "2026-09-15T15:25:13.188Z"
+    },
+    {
+      "id": "v_1789736615638_hacan6",
+      "fecha": "2026-09-11",
+      "frigorifico": "Frigolar",
+      "dte": "032566677-3",
+      "nroTropa": "21497",
+      "pesoJaula": 21880,
+      "cabezasJaula": 34,
+      "filas": [
+        {
+          "caravana": "",
+          "garron": "475",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 194,
+          "tipificador": "",
+          "tipificacion": "C2"
+        },
+        {
+          "caravana": "",
+          "garron": "475",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 190,
+          "tipificador": "",
+          "tipificacion": "C2"
+        },
+        {
+          "caravana": "",
+          "garron": "476",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 201,
+          "tipificador": "",
+          "tipificacion": "C2"
+        },
+        {
+          "caravana": "",
+          "garron": "476",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 205,
+          "tipificador": "",
+          "tipificacion": "C2"
+        },
+        {
+          "caravana": "032010003895556",
+          "garron": "477",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 165,
+          "tipificador": "",
+          "tipificacion": "B1"
+        },
+        {
+          "caravana": "032010003895556",
+          "garron": "477",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 164,
+          "tipificador": "",
+          "tipificacion": "B1"
+        },
+        {
+          "caravana": "",
+          "garron": "478",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 200,
+          "tipificador": "",
+          "tipificacion": "B2"
+        },
+        {
+          "caravana": "",
+          "garron": "478",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 197,
+          "tipificador": "",
+          "tipificacion": "B2"
+        },
+        {
+          "caravana": "",
+          "garron": "479",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 207,
+          "tipificador": "",
+          "tipificacion": "B2"
+        },
+        {
+          "caravana": "",
+          "garron": "479",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 207,
+          "tipificador": "",
+          "tipificacion": "B2"
+        },
+        {
+          "caravana": "032010012001614",
+          "garron": "480",
+          "contusion": "0-0-3",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 173,
+          "tipificador": "",
+          "tipificacion": "C2"
+        },
+        {
+          "caravana": "032010012001614",
+          "garron": "480",
+          "contusion": "0-0-3",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 173,
+          "tipificador": "",
+          "tipificacion": "C2"
+        },
+        {
+          "caravana": "032010012001602",
+          "garron": "481",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 205,
+          "tipificador": "",
+          "tipificacion": "B2"
+        },
+        {
+          "caravana": "032010012001602",
+          "garron": "481",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 204,
+          "tipificador": "",
+          "tipificacion": "B2"
+        },
+        {
+          "caravana": "",
+          "garron": "482",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 196,
+          "tipificador": "",
+          "tipificacion": "C2"
+        },
+        {
+          "caravana": "",
+          "garron": "482",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 193,
+          "tipificador": "",
+          "tipificacion": "C2"
+        },
+        {
+          "caravana": "",
+          "garron": "483",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 187,
+          "tipificador": "",
+          "tipificacion": "C2"
+        },
+        {
+          "caravana": "",
+          "garron": "483",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 188,
+          "tipificador": "",
+          "tipificacion": "C2"
+        },
+        {
+          "caravana": "",
+          "garron": "484",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 177,
+          "tipificador": "",
+          "tipificacion": "C2"
+        },
+        {
+          "caravana": "",
+          "garron": "484",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 175,
+          "tipificador": "",
+          "tipificacion": "C2"
+        },
+        {
+          "caravana": "032010000617245",
+          "garron": "485",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 217,
+          "tipificador": "",
+          "tipificacion": "B2"
+        },
+        {
+          "caravana": "032010000617245",
+          "garron": "485",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 219,
+          "tipificador": "",
+          "tipificacion": "B2"
+        },
+        {
+          "caravana": "",
+          "garron": "486",
+          "contusion": "1-0-0",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 185,
+          "tipificador": "",
+          "tipificacion": "B2"
+        },
+        {
+          "caravana": "",
+          "garron": "486",
+          "contusion": "1-0-0",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 182,
+          "tipificador": "",
+          "tipificacion": "B2"
+        },
+        {
+          "caravana": "",
+          "garron": "487",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 168,
+          "tipificador": "",
+          "tipificacion": "C2"
+        },
+        {
+          "caravana": "",
+          "garron": "487",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 167,
+          "tipificador": "",
+          "tipificacion": "C2"
+        },
+        {
+          "caravana": "",
+          "garron": "488",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 170,
+          "tipificador": "",
+          "tipificacion": "C1"
+        },
+        {
+          "caravana": "",
+          "garron": "488",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 174,
+          "tipificador": "",
+          "tipificacion": "C1"
+        },
+        {
+          "caravana": "",
+          "garron": "489",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 172,
+          "tipificador": "",
+          "tipificacion": "C2"
+        },
+        {
+          "caravana": "",
+          "garron": "489",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 169,
+          "tipificador": "",
+          "tipificacion": "C2"
+        },
+        {
+          "caravana": "",
+          "garron": "490",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 161,
+          "tipificador": "",
+          "tipificacion": "B2"
+        },
+        {
+          "caravana": "",
+          "garron": "490",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 157,
+          "tipificador": "",
+          "tipificacion": "B2"
+        },
+        {
+          "caravana": "",
+          "garron": "491",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 172,
+          "tipificador": "",
+          "tipificacion": "C2"
+        },
+        {
+          "caravana": "",
+          "garron": "491",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 171,
+          "tipificador": "",
+          "tipificacion": "C2"
+        },
+        {
+          "caravana": "",
+          "garron": "492",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 143,
+          "tipificador": "",
+          "tipificacion": "C2"
+        },
+        {
+          "caravana": "",
+          "garron": "492",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 141,
+          "tipificador": "",
+          "tipificacion": "C2"
+        },
+        {
+          "caravana": "032010013137065",
+          "garron": "493",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 196,
+          "tipificador": "",
+          "tipificacion": "C2"
+        },
+        {
+          "caravana": "032010013137065",
+          "garron": "493",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 193,
+          "tipificador": "",
+          "tipificacion": "C2"
+        },
+        {
+          "caravana": "032010002923514",
+          "garron": "494",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 183,
+          "tipificador": "",
+          "tipificacion": "B1"
+        },
+        {
+          "caravana": "032010002923514",
+          "garron": "494",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 179,
+          "tipificador": "",
+          "tipificacion": "B1"
+        },
+        {
+          "caravana": "",
+          "garron": "495",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 188,
+          "tipificador": "",
+          "tipificacion": "C1"
+        },
+        {
+          "caravana": "",
+          "garron": "495",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 183,
+          "tipificador": "",
+          "tipificacion": "C1"
+        },
+        {
+          "caravana": "",
+          "garron": "496",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 177,
+          "tipificador": "",
+          "tipificacion": "C1"
+        },
+        {
+          "caravana": "",
+          "garron": "496",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 173,
+          "tipificador": "",
+          "tipificacion": "C1"
+        },
+        {
+          "caravana": "",
+          "garron": "497",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 176,
+          "tipificador": "",
+          "tipificacion": "C2"
+        },
+        {
+          "caravana": "",
+          "garron": "497",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 172,
+          "tipificador": "",
+          "tipificacion": "C2"
+        },
+        {
+          "caravana": "",
+          "garron": "498",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 184,
+          "tipificador": "",
+          "tipificacion": "C2"
+        },
+        {
+          "caravana": "",
+          "garron": "498",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 180,
+          "tipificador": "",
+          "tipificacion": "C2"
+        },
+        {
+          "caravana": "",
+          "garron": "499",
+          "contusion": "1-0-0",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 203,
+          "tipificador": "",
+          "tipificacion": "B2"
+        },
+        {
+          "caravana": "",
+          "garron": "499",
+          "contusion": "1-0-0",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 202,
+          "tipificador": "",
+          "tipificacion": "B2"
+        },
+        {
+          "caravana": "",
+          "garron": "500",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 171,
+          "tipificador": "",
+          "tipificacion": "C2"
+        },
+        {
+          "caravana": "",
+          "garron": "500",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 168,
+          "tipificador": "",
+          "tipificacion": "C2"
+        },
+        {
+          "caravana": "032010003895172",
+          "garron": "501",
+          "contusion": "1-0-0",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 175,
+          "tipificador": "",
+          "tipificacion": "C2"
+        },
+        {
+          "caravana": "032010003895172",
+          "garron": "501",
+          "contusion": "1-0-0",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 167,
+          "tipificador": "",
+          "tipificacion": "C2"
+        },
+        {
+          "caravana": "",
+          "garron": "502",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 185,
+          "tipificador": "",
+          "tipificacion": "C2"
+        },
+        {
+          "caravana": "",
+          "garron": "502",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 181,
+          "tipificador": "",
+          "tipificacion": "C2"
+        },
+        {
+          "caravana": "",
+          "garron": "503",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 192,
+          "tipificador": "",
+          "tipificacion": "C2"
+        },
+        {
+          "caravana": "",
+          "garron": "503",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 190,
+          "tipificador": "",
+          "tipificacion": "C2"
+        },
+        {
+          "caravana": "032010010187055",
+          "garron": "504",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 204,
+          "tipificador": "",
+          "tipificacion": "C2"
+        },
+        {
+          "caravana": "032010010187055",
+          "garron": "504",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 204,
+          "tipificador": "",
+          "tipificacion": "C2"
+        },
+        {
+          "caravana": "032010010187047",
+          "garron": "505",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 161,
+          "tipificador": "",
+          "tipificacion": "C2"
+        },
+        {
+          "caravana": "032010010187047",
+          "garron": "505",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 163,
+          "tipificador": "",
+          "tipificacion": "C2"
+        },
+        {
+          "caravana": "032010012001608",
+          "garron": "506",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 158,
+          "tipificador": "",
+          "tipificacion": "C2"
+        },
+        {
+          "caravana": "032010012001608",
+          "garron": "506",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 156,
+          "tipificador": "",
+          "tipificacion": "C2"
+        },
+        {
+          "caravana": "",
+          "garron": "507",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 189,
+          "tipificador": "",
+          "tipificacion": "C2"
+        },
+        {
+          "caravana": "",
+          "garron": "507",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 187,
+          "tipificador": "",
+          "tipificacion": "C2"
+        },
+        {
+          "caravana": "",
+          "garron": "508",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 180,
+          "tipificador": "",
+          "tipificacion": "B2"
+        },
+        {
+          "caravana": "",
+          "garron": "508",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 179,
+          "tipificador": "",
+          "tipificacion": "B2"
+        }
+      ],
+      "creado": "2026-09-18T13:03:35.638Z"
+    },
+    {
+      "id": "v_1789736615638_mx7eha",
+      "fecha": "2026-09-11",
+      "frigorifico": "Frigolar",
+      "dte": "032566686-2",
+      "nroTropa": "21498",
+      "pesoJaula": 20420,
+      "cabezasJaula": 33,
+      "filas": [
+        {
+          "caravana": "032010010578698",
+          "garron": "509",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 187,
+          "tipificador": "",
+          "tipificacion": "C2"
+        },
+        {
+          "caravana": "032010010578698",
+          "garron": "509",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 185,
+          "tipificador": "",
+          "tipificacion": "C2"
+        },
+        {
+          "caravana": "",
+          "garron": "510",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 182,
+          "tipificador": "",
+          "tipificacion": "B2"
+        },
+        {
+          "caravana": "",
+          "garron": "510",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 178,
+          "tipificador": "",
+          "tipificacion": "B2"
+        },
+        {
+          "caravana": "",
+          "garron": "511",
+          "contusion": "1-0-0",
+          "valorCorte": "1/2 Res",
+          "categoria": "6D - VA",
+          "kg": 161,
+          "tipificador": "",
+          "tipificacion": "B2"
+        },
+        {
+          "caravana": "",
+          "garron": "511",
+          "contusion": "1-0-0",
+          "valorCorte": "1/2 Res",
+          "categoria": "6D - VA",
+          "kg": 161,
+          "tipificador": "",
+          "tipificacion": "B2"
+        },
+        {
+          "caravana": "",
+          "garron": "512",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 188,
+          "tipificador": "",
+          "tipificacion": "C2"
+        },
+        {
+          "caravana": "",
+          "garron": "512",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 190,
+          "tipificador": "",
+          "tipificacion": "C2"
+        },
+        {
+          "caravana": "",
+          "garron": "513",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 198,
+          "tipificador": "",
+          "tipificacion": "C2"
+        },
+        {
+          "caravana": "",
+          "garron": "513",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 195,
+          "tipificador": "",
+          "tipificacion": "C2"
+        },
+        {
+          "caravana": "032010003895365",
+          "garron": "514",
+          "contusion": "0-0-3",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 186,
+          "tipificador": "",
+          "tipificacion": "C2"
+        },
+        {
+          "caravana": "032010003895365",
+          "garron": "514",
+          "contusion": "0-0-3",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 185,
+          "tipificador": "",
+          "tipificacion": "C2"
+        },
+        {
+          "caravana": "",
+          "garron": "515",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 176,
+          "tipificador": "",
+          "tipificacion": "C2"
+        },
+        {
+          "caravana": "",
+          "garron": "515",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 175,
+          "tipificador": "",
+          "tipificacion": "C2"
+        },
+        {
+          "caravana": "",
+          "garron": "516",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 152,
+          "tipificador": "",
+          "tipificacion": "C2"
+        },
+        {
+          "caravana": "",
+          "garron": "516",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 154,
+          "tipificador": "",
+          "tipificacion": "C2"
+        },
+        {
+          "caravana": "",
+          "garron": "517",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 167,
+          "tipificador": "",
+          "tipificacion": "C2"
+        },
+        {
+          "caravana": "",
+          "garron": "517",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 163,
+          "tipificador": "",
+          "tipificacion": "C2"
+        },
+        {
+          "caravana": "",
+          "garron": "518",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 195,
+          "tipificador": "",
+          "tipificacion": "B2"
+        },
+        {
+          "caravana": "",
+          "garron": "518",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 192,
+          "tipificador": "",
+          "tipificacion": "B2"
+        },
+        {
+          "caravana": "",
+          "garron": "519",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 171,
+          "tipificador": "",
+          "tipificacion": "C2"
+        },
+        {
+          "caravana": "",
+          "garron": "519",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 170,
+          "tipificador": "",
+          "tipificacion": "C2"
+        },
+        {
+          "caravana": "032010003895608",
+          "garron": "520",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 176,
+          "tipificador": "",
+          "tipificacion": "B1"
+        },
+        {
+          "caravana": "032010003895608",
+          "garron": "520",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 176,
+          "tipificador": "",
+          "tipificacion": "B1"
+        },
+        {
+          "caravana": "",
+          "garron": "521",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 184,
+          "tipificador": "",
+          "tipificacion": "C2"
+        },
+        {
+          "caravana": "",
+          "garron": "521",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 185,
+          "tipificador": "",
+          "tipificacion": "C2"
+        },
+        {
+          "caravana": "032010003897639",
+          "garron": "522",
+          "contusion": "1-0-0",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 168,
+          "tipificador": "",
+          "tipificacion": "C2"
+        },
+        {
+          "caravana": "032010003897639",
+          "garron": "522",
+          "contusion": "1-0-0",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 167,
+          "tipificador": "",
+          "tipificacion": "C2"
+        },
+        {
+          "caravana": "",
+          "garron": "523",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 173,
+          "tipificador": "",
+          "tipificacion": "C1"
+        },
+        {
+          "caravana": "",
+          "garron": "523",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 171,
+          "tipificador": "",
+          "tipificacion": "C1"
+        },
+        {
+          "caravana": "",
+          "garron": "524",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 196,
+          "tipificador": "",
+          "tipificacion": "C2"
+        },
+        {
+          "caravana": "",
+          "garron": "524",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 201,
+          "tipificador": "",
+          "tipificacion": "C2"
+        },
+        {
+          "caravana": "",
+          "garron": "525",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 166,
+          "tipificador": "",
+          "tipificacion": "C2"
+        },
+        {
+          "caravana": "",
+          "garron": "525",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 164,
+          "tipificador": "",
+          "tipificacion": "C2"
+        },
+        {
+          "caravana": "032010010187032",
+          "garron": "526",
+          "contusion": "0-0-3",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 188,
+          "tipificador": "",
+          "tipificacion": "C1"
+        },
+        {
+          "caravana": "032010010187032",
+          "garron": "526",
+          "contusion": "0-0-3",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 188,
+          "tipificador": "",
+          "tipificacion": "C1"
+        },
+        {
+          "caravana": "",
+          "garron": "527",
+          "contusion": "1-0-0",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 185,
+          "tipificador": "",
+          "tipificacion": "B2"
+        },
+        {
+          "caravana": "",
+          "garron": "527",
+          "contusion": "1-0-0",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 183,
+          "tipificador": "",
+          "tipificacion": "B2"
+        },
+        {
+          "caravana": "",
+          "garron": "528",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 160,
+          "tipificador": "",
+          "tipificacion": "C2"
+        },
+        {
+          "caravana": "",
+          "garron": "528",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 162,
+          "tipificador": "",
+          "tipificacion": "C2"
+        },
+        {
+          "caravana": "",
+          "garron": "529",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 154,
+          "tipificador": "",
+          "tipificacion": "C2"
+        },
+        {
+          "caravana": "",
+          "garron": "529",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 150,
+          "tipificador": "",
+          "tipificacion": "C2"
+        },
+        {
+          "caravana": "",
+          "garron": "530",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 195,
+          "tipificador": "",
+          "tipificacion": "B2"
+        },
+        {
+          "caravana": "",
+          "garron": "530",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 192,
+          "tipificador": "",
+          "tipificacion": "B2"
+        },
+        {
+          "caravana": "",
+          "garron": "531",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 208,
+          "tipificador": "",
+          "tipificacion": "B2"
+        },
+        {
+          "caravana": "",
+          "garron": "531",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 208,
+          "tipificador": "",
+          "tipificacion": "B2"
+        },
+        {
+          "caravana": "",
+          "garron": "532",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 181,
+          "tipificador": "",
+          "tipificacion": "C3"
+        },
+        {
+          "caravana": "",
+          "garron": "532",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 177,
+          "tipificador": "",
+          "tipificacion": "C3"
+        },
+        {
+          "caravana": "",
+          "garron": "533",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 187,
+          "tipificador": "",
+          "tipificacion": "B2"
+        },
+        {
+          "caravana": "",
+          "garron": "533",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 183,
+          "tipificador": "",
+          "tipificacion": "B2"
+        },
+        {
+          "caravana": "",
+          "garron": "534",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 181,
+          "tipificador": "",
+          "tipificacion": "C2"
+        },
+        {
+          "caravana": "",
+          "garron": "534",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 176,
+          "tipificador": "",
+          "tipificacion": "C2"
+        },
+        {
+          "caravana": "",
+          "garron": "535",
+          "contusion": "0-0-3",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 195,
+          "tipificador": "",
+          "tipificacion": "C2"
+        },
+        {
+          "caravana": "",
+          "garron": "535",
+          "contusion": "0-0-3",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 196,
+          "tipificador": "",
+          "tipificacion": "C2"
+        },
+        {
+          "caravana": "",
+          "garron": "536",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 167,
+          "tipificador": "",
+          "tipificacion": "C2"
+        },
+        {
+          "caravana": "",
+          "garron": "536",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 168,
+          "tipificador": "",
+          "tipificacion": "C2"
+        },
+        {
+          "caravana": "",
+          "garron": "537",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 165,
+          "tipificador": "",
+          "tipificacion": "C2"
+        },
+        {
+          "caravana": "",
+          "garron": "537",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 162,
+          "tipificador": "",
+          "tipificacion": "C2"
+        },
+        {
+          "caravana": "032010010187049",
+          "garron": "538",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 148,
+          "tipificador": "",
+          "tipificacion": "C2"
+        },
+        {
+          "caravana": "032010010187049",
+          "garron": "538",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 149,
+          "tipificador": "",
+          "tipificacion": "C2"
+        },
+        {
+          "caravana": "",
+          "garron": "539",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 156,
+          "tipificador": "",
+          "tipificacion": "C2"
+        },
+        {
+          "caravana": "",
+          "garron": "539",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 153,
+          "tipificador": "",
+          "tipificacion": "C2"
+        },
+        {
+          "caravana": "",
+          "garron": "540",
+          "contusion": "1-0-0",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 187,
+          "tipificador": "",
+          "tipificacion": "C2"
+        },
+        {
+          "caravana": "",
+          "garron": "540",
+          "contusion": "1-0-0",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 187,
+          "tipificador": "",
+          "tipificacion": "C2"
+        },
+        {
+          "caravana": "",
+          "garron": "541",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 161,
+          "tipificador": "",
+          "tipificacion": "C2"
+        },
+        {
+          "caravana": "",
+          "garron": "541",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 160,
+          "tipificador": "",
+          "tipificacion": "C2"
+        }
+      ],
+      "creado": "2026-09-18T13:03:35.638Z"
     }
   ],
   "frigorificosCustom": [
