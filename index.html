@@ -1529,22 +1529,29 @@ function esVentaDeVacas(stats){
   return total > 0 && (vacas/total) >= 0.5;
 }
 
-// Formato condicional del rendimiento (distinto al semáforo de calidad):
-// ≥58% excelente (verde), 55-58% bueno (ocre), <55% bajo (rojo)
+// Formato condicional del rendimiento (color de letra), escala de 4 colores:
+// ≥60% verde (excelente), 57-59.9% ocre (bueno), 54-56.9% rojo (regular), <54% marrón (bajo)
 function colorRendimiento(val){
   if(val === null || val === undefined) return '';
-  if(val >= 58) return '#2E7D57';
-  if(val >= 55) return '#B8863B';
-  return '#B4432E';
+  if(val >= 60) return '#4C5B3D';
+  if(val >= 57) return '#9A6B24';
+  if(val >= 54) return '#8C2F1E';
+  return '#3A2418';
+}
+
+// Formato condicional del índice de calidad (color de letra) — 4 colores,
+// alineados a las clases de la semáfora Muy buena/Buena/Regular/Baja.
+function colorIndiceFont(val){
+  const c = claseIndice(val);
+  return { A:'#4C5B3D', B:'#9A6B24', C:'#8C2F1E', D:'#3A2418' }[c.color] || 'var(--ink)';
 }
 
 function saleRowHTML(venta, stats){
   const fc = fmtFechaCorta(venta.fecha);
   const indice = calcularIndiceTotal(stats).puntaje;
-  const clase = claseIndice(indice);
   const resCat = resumenCategoriasAnimales(stats);
   const esVaca = esVentaDeVacas(stats);
-  const colorIndice = { A:'#FFFFFF', B:'#FFF6E0', C:'#FFEDE7', D:'#F7E9E1' }[clase.color] || '#FFFFFF';
+  const colorIndice = colorIndiceFont(indice);
   const tienePV = stats.kgVivoTotal && stats.kgVivoPromedio;
   const rendColor = colorRendimiento(stats.rendimientoJaula);
   return `
@@ -1561,7 +1568,7 @@ function saleRowHTML(venta, stats){
         <div><b>${stats.kgPromedioAnimal.toFixed(0)} kg</b><span class="metric-label">kg prom res/cab</span></div>
         <div><b>${tienePV ? fmtKg(stats.kgVivoTotal) : '—'}</b><span class="metric-label">kg PV</span></div>
         <div><b>${tienePV ? stats.kgVivoPromedio.toFixed(0)+' kg' : '—'}</b><span class="metric-label">kg prom PV/cab</span></div>
-        <div><b class="badge badge-${clase.color}" style="font-size:14px;color:${colorIndice};">${indice.toFixed(0)}</b><span class="metric-label">índice calidad</span></div>
+        <div><b style="color:${colorIndice};font-size:16px;">${indice.toFixed(0)}</b><span class="metric-label">índice calidad</span></div>
         <div><b style="color:${rendColor || 'var(--ink)'};font-size:16px;">${stats.rendimientoJaula !== null ? stats.rendimientoJaula.toFixed(1)+'%' : '—'}</b><span class="metric-label">rendimiento</span></div>
       </div>
     </div>`;
@@ -2249,7 +2256,10 @@ function renderComparadorBody(ventas){
 
   const ctxRendVsPeso = document.getElementById('chartCompRendVsPeso');
   if(ctxRendVsPeso){
-    const conRend = items.filter(x=>x.stats.rendimientoJaula!==null);
+    // Se excluyen las ventas de vacas (parámetros distintos) y el eje X se acota a
+    // animales reales (~280 kg en adelante): los lotes que agrupan por media res
+    // (como los de Rioplatense) aparecerían en ~150 kg y aplanarían el gráfico.
+    const conRend = items.filter(x=> x.stats.rendimientoJaula!==null && !esVentaDeVacas(x.stats));
     chartInstances['compRendVsPeso'] = new Chart(ctxRendVsPeso, {
       type:'scatter',
       data:{
@@ -2273,8 +2283,8 @@ function renderComparadorBody(ventas){
           tooltip:{ callbacks:{ label:(c)=> `${c.raw.label}: ${c.parsed.x.toFixed(0)} kg, ${c.parsed.y.toFixed(1)}% rend. — clic para ver detalle` } }
         },
         scales:{
-          x:{ title:{display:true, text:'Kg promedio por animal'}, grid:{color:'#E4DDCC'} },
-          y:{ title:{display:true, text:'Rendimiento (%)'}, grid:{color:'#E4DDCC'} }
+          x:{ min:280, title:{display:true, text:'Kg promedio por animal'}, grid:{color:'#E4DDCC'} },
+          y:{ min:56, title:{display:true, text:'Rendimiento (%)'}, grid:{color:'#E4DDCC'} }
         }
       }
     });
