@@ -356,6 +356,10 @@ tr:hover td{background:var(--bone-2);}
 .matrix-table th{background:var(--ink);color:var(--paper);}
 .matrix-cell{font-family:'Roboto Slab',serif;font-weight:700;padding:10px;}
 
+/* ---------- BARRA DE CALIDAD (tabla comparar) ---------- */
+.calidad-bar{display:flex;height:13px;border-radius:3px;overflow:hidden;background:var(--bone-2);min-width:110px;}
+.calidad-bar span{display:block;height:100%;min-width:2px;}
+
 /* ---------- TOAST ---------- */
 #toast{
   position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);
@@ -432,6 +436,7 @@ footer.foot{margin-top:50px;padding-top:20px;border-top:1px solid var(--line);co
 .center{align-items:center;}
 .gap8{gap:8px;}
 .gap12{gap:12px;}
+.mt4{margin-top:4px;}
 .mt8{margin-top:8px;}
 .mt16{margin-top:16px;}
 .mt24{margin-top:24px;}
@@ -2017,6 +2022,9 @@ function renderGraficosDetalle(stats){
 // ---------------- COMPARAR VENTAS ----------------
 let comparadorSeleccion = [];
 let comparadorInicializado = false;
+let compararFiltros = { mes:'', frigo:'' };
+
+const MESES_CORTOS = ['ENE','FEB','MAR','ABR','MAY','JUN','JUL','AGO','SEP','OCT','NOV','DIC'];
 
 // Puntaje general 0-100 por venta = ÍNDICE DE CALIDAD TOTAL (definido arriba).
 // Se usaba acá y en las otras secciones con fórmulas distintas; ahora hay uno solo.
@@ -2028,14 +2036,13 @@ function claseSemaforo(puntaje){
 
 // Pills de "Elegí las ventas": agrupadas por mes, con etiqueta corta día · frigorífico
 function gruposPills(ventas){
-  const MESES = ['ENE','FEB','MAR','ABR','MAY','JUN','JUL','AGO','SEP','OCT','NOV','DIC'];
   const grupos = [];
   ventas.forEach(v=>{
     const d = v.fecha ? new Date(v.fecha) : null;
     const key = d ? d.getFullYear()+'-'+d.getMonth() : 's/f';
     let g = grupos.find(x=>x.key===key);
     if(!g){
-      g = { key, label: d ? MESES[d.getMonth()]+' \''+String(d.getFullYear()).slice(2) : 'Sin fecha', items:[] };
+      g = { key, label: d ? MESES_CORTOS[d.getMonth()]+' \''+String(d.getFullYear()).slice(2) : 'Sin fecha', items:[] };
       grupos.push(g);
     }
     g.items.push(v);
@@ -2057,6 +2064,20 @@ function gruposPills(ventas){
   }).join('');
 }
 
+// Barra visual de composición de calidad (A/B/C+D) para la tabla de comparación
+function barraCalidadHTML(stats){
+  const seg = [
+    { v:stats.pctA,  color:'#4C5B3D', label:'A' },
+    { v:stats.pctB,  color:'#B8863B', label:'B' },
+    { v:stats.pctCD, color:'#8C2F1E', label:'C+D' }
+  ];
+  return `
+    <div class="calidad-bar" title="A ${stats.pctA.toFixed(0)}% · B ${stats.pctB.toFixed(0)}% · C+D ${stats.pctCD.toFixed(0)}%">
+      ${seg.map(s=> s.v>0 ? `<span style="width:${s.v}%;background:${s.color};"></span>` : '').join('')}
+    </div>
+    <div class="small muted mt4">A ${stats.pctA.toFixed(0)}% · B ${stats.pctB.toFixed(0)}% · C+D ${stats.pctCD.toFixed(0)}%</div>`;
+}
+
 function renderComparar(ventas){
   const el = document.getElementById('viewComparar');
   if(ventas.length < 2){
@@ -2064,12 +2085,37 @@ function renderComparar(ventas){
     return;
   }
   const ordenadas = [...ventas].sort((a,b)=> new Date(b.fecha) - new Date(a.fecha));
+
+  // opciones de filtros (meses y frigoríficos presentes en las ventas)
+  const meses = [];
+  ordenadas.forEach(v=>{
+    const d = v.fecha ? new Date(v.fecha) : null;
+    if(!d) return;
+    const key = d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');
+    if(!meses.some(m=>m.key===key)) meses.push({ key, label: MESES_CORTOS[d.getMonth()]+' \''+String(d.getFullYear()).slice(2) });
+  });
+  meses.sort((a,b)=> b.key.localeCompare(a.key));
+  const frigos = [...new Set(ordenadas.map(v=> v.frigorifico||'s/frig.'))].sort();
+
   if(!comparadorInicializado){
     comparadorSeleccion = ordenadas.map(v=>v.id); // por defecto, todas (solo la primera vez)
     comparadorInicializado = true;
   }
   // saca de la selección ids que ya no existen (venta borrada)
   comparadorSeleccion = comparadorSeleccion.filter(id=> ventas.some(v=>v.id===id));
+
+  const filtradas = ordenadas.filter(v=>{
+    if(compararFiltros.mes){
+      const d = v.fecha ? new Date(v.fecha) : null;
+      const key = d ? d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0') : '';
+      if(key !== compararFiltros.mes) return false;
+    }
+    if(compararFiltros.frigo && (v.frigorifico||'') !== compararFiltros.frigo) return false;
+    return true;
+  });
+  // mantiene selección solo dentro del lote filtrado
+  const filtradosIds = new Set(filtradas.map(v=>v.id));
+  comparadorSeleccion = comparadorSeleccion.filter(id=> filtradosIds.has(id));
 
   el.innerHTML = `
     <div class="card mb16">
@@ -2079,24 +2125,55 @@ function renderComparar(ventas){
           <button class="btn btn-sm btn-ghost" id="btnCompNinguna">Ninguna</button>
         </div>
       </div>
+      <div class="ventas-filtros" id="compararFiltros">
+        <div class="field">
+          <label for="filtroCompMes">Mes</label>
+          <select id="filtroCompMes">
+            <option value="">Todos los meses</option>
+            ${meses.map(m=>`<option value="${m.key}" ${compararFiltros.mes===m.key?'selected':''}>${m.label}</option>`).join('')}
+          </select>
+        </div>
+        <div class="field">
+          <label for="filtroCompFrigo">Frigorífico</label>
+          <select id="filtroCompFrigo">
+            <option value="">Todos los frigoríficos</option>
+            ${frigos.map(f=>`<option value="${f}" ${compararFiltros.frigo===f?'selected':''}>${f}</option>`).join('')}
+          </select>
+        </div>
+      </div>
       <div id="pillsComparar">
-        ${gruposPills(ordenadas)}
+        ${gruposPills(filtradas)}
       </div>
     </div>
     <div id="comparadorBody"></div>
   `;
 
+  document.getElementById('filtroCompMes').addEventListener('change', e=>{
+    compararFiltros.mes = e.target.value;
+    renderComparar(getVentas());
+  });
+  document.getElementById('filtroCompFrigo').addEventListener('change', e=>{
+    compararFiltros.frigo = e.target.value;
+    renderComparar(getVentas());
+  });
+
   document.getElementById('pillsComparar').querySelectorAll('.pill').forEach(p=>{
     p.addEventListener('click', ()=> toggleComparar(p.dataset.pillId));
   });
   document.getElementById('btnCompTodas').addEventListener('click', ()=>{
-    comparadorSeleccion = ventas.map(v=>v.id); renderComparar(getVentas());
+    comparadorSeleccion = filtradas.map(v=>v.id); renderComparar(getVentas());
   });
   document.getElementById('btnCompNinguna').addEventListener('click', ()=>{
     comparadorSeleccion = []; renderComparar(getVentas());
   });
 
-  renderComparadorBody(ventas);
+  if(filtradas.length < 2){
+    document.getElementById('comparadorBody').innerHTML =
+      `<div class="card empty"><p class="muted">${filtradas.length===0 ? 'No hay ventas que coincidan con los filtros elegidos.' : 'Elegí al menos 2 ventas para poder compararlas entre sí.'}</p></div>`;
+    return;
+  }
+
+  renderComparadorBody(filtradas);
 }
 
 function toggleComparar(id){
@@ -2173,8 +2250,8 @@ function renderComparadorBody(ventas){
               <td>${sem.emoji} ${sem.label}</td>
               <td>${x.stats.nAnimales}</td>
               <td>${x.stats.kgPromedioAnimal.toFixed(0)} kg</td>
-              <td>${x.stats.pctA.toFixed(0)}% A · ${x.stats.pctB.toFixed(0)}% B · ${x.stats.pctCD.toFixed(0)}% C+D</td>
-              <td>${x.stats.rendimientoJaula!==null ? x.stats.rendimientoJaula.toFixed(1)+'%' : 'sin dato'}</td>
+              <td>${barraCalidadHTML(x.stats)}</td>
+              <td><span style="color:${colorRendimiento(x.stats.rendimientoJaula)||'var(--ink)'};font-weight:700;">${x.stats.rendimientoJaula!==null ? x.stats.rendimientoJaula.toFixed(1)+'%' : 'sin dato'}</span></td>
               <td>${x.stats.coefVariacion.toFixed(1)}% var.</td>
             </tr>`;
           }).join('')}
