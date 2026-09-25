@@ -1,6 +1,6 @@
 {
   "formato": "romaneo_feedlot_datos_v1",
-  "actualizado": "2026-09-18T13:03:36.344Z",
+  "actualizado": "2026-09-25T16:40:06.645Z",
   "ventas": [
     {
       "id": "v_1789386883744_216ssy",
@@ -54837,9 +54837,660 @@
         }
       ],
       "creado": "2026-09-18T13:03:35.638Z"
+    },
+    {
+      "id": "v_1790354405933_udcgnr",
+      "fecha": "2026-09-24",
+      "frigorifico": "Bernal",
+      "pesoJaula": 20100,
+      "cabezasJaula": 33,
+      "filas": [
+        {
+          "caravana": "Sin Declarar",
+          "garron": "776",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 139,
+          "tipificador": "696",
+          "tipificacion": "B2"
+        },
+        {
+          "caravana": "Sin Declarar",
+          "garron": "776",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 141,
+          "tipificador": "696",
+          "tipificacion": "B2"
+        },
+        {
+          "caravana": "Sin Declarar",
+          "garron": "777",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 163,
+          "tipificador": "696",
+          "tipificacion": "B2"
+        },
+        {
+          "caravana": "Sin Declarar",
+          "garron": "777",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 159,
+          "tipificador": "696",
+          "tipificacion": "B2"
+        },
+        {
+          "caravana": "Sin Declarar",
+          "garron": "778",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 155,
+          "tipificador": "696",
+          "tipificacion": "B2"
+        },
+        {
+          "caravana": "Sin Declarar",
+          "garron": "778",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 159,
+          "tipificador": "696",
+          "tipificacion": "B2"
+        },
+        {
+          "caravana": "Sin Declarar",
+          "garron": "779",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 148,
+          "tipificador": "696",
+          "tipificacion": "B2"
+        },
+        {
+          "caravana": "Sin Declarar",
+          "garron": "779",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 145,
+          "tipificador": "696",
+          "tipificacion": "B2"
+        },
+        {
+          "caravana": "Sin Declarar",
+          "garron": "780",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 186,
+          "tipificador": "696",
+          "tipificacion": "B2"
+        },
+        {
+          "caravana": "Sin Declarar",
+          "garron": "780",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 181,
+          "tipificador": "696",
+          "tipificacion": "B2"
+        },
+        {
+          "caravana": "Sin Declarar",
+          "garron": "781",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 180,
+          "tipificador": "696",
+          "tipificacion": "B2"
+        },
+        {
+          "caravana": "Sin Declarar",
+          "garron": "781",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 177,
+          "tipificador": "696",
+          "tipificacion": "B2"
+        },
+        {
+          "caravana": "Sin Declarar",
+          "garron": "782",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 194,
+          "tipificador": "696",
+          "tipificacion": "B2"
+        },
+        {
+          "caravana": "Sin Declarar",
+          "garron": "782",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 191,
+          "tipificador": "696",
+          "tipificacion": "B2"
+        },
+        {
+          "caravana": "Sin Declarar",
+          "garron": "783",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 127,
+          "tipificador": "696",
+          "tipificacion": "B2"
+        },
+        {
+          "caravana": "Sin Declarar",
+          "garron": "783",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 128,
+          "tipificador": "696",
+          "tipificacion": "B2"
+        },
+        {
+          "caravana": "Sin Declarar",
+          "garron": "784",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 169,
+          "tipificador": "696",
+          "tipificacion": "B2"
+        },
+        {
+          "caravana": "Sin Declarar",
+          "garron": "784",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 167,
+          "tipificador": "696",
+          "tipificacion": "B2"
+        },
+        {
+          "caravana": "Sin Declarar",
+          "garron": "785",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 199,
+          "tipificador": "696",
+          "tipificacion": "A2"
+        },
+        {
+          "caravana": "Sin Declarar",
+          "garron": "785",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 201,
+          "tipificador": "696",
+          "tipificacion": "A2"
+        },
+        {
+          "caravana": "Sin Declarar",
+          "garron": "786",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 181,
+          "tipificador": "696",
+          "tipificacion": "B2"
+        },
+        {
+          "caravana": "Sin Declarar",
+          "garron": "786",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 180,
+          "tipificador": "696",
+          "tipificacion": "B2"
+        },
+        {
+          "caravana": "Sin Declarar",
+          "garron": "787",
+          "contusion": "1-0-0",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 162,
+          "tipificador": "696",
+          "tipificacion": "B2"
+        },
+        {
+          "caravana": "Sin Declarar",
+          "garron": "787",
+          "contusion": "1-0-0",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 166,
+          "tipificador": "696",
+          "tipificacion": "B2"
+        },
+        {
+          "caravana": "Sin Declarar",
+          "garron": "788",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 183,
+          "tipificador": "696",
+          "tipificacion": "B2"
+        },
+        {
+          "caravana": "Sin Declarar",
+          "garron": "788",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 177,
+          "tipificador": "696",
+          "tipificacion": "B2"
+        },
+        {
+          "caravana": "Sin Declarar",
+          "garron": "789",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 173,
+          "tipificador": "696",
+          "tipificacion": "B2"
+        },
+        {
+          "caravana": "Sin Declarar",
+          "garron": "789",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 169,
+          "tipificador": "696",
+          "tipificacion": "B2"
+        },
+        {
+          "caravana": "Sin Declarar",
+          "garron": "790",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 183,
+          "tipificador": "696",
+          "tipificacion": "B2"
+        },
+        {
+          "caravana": "Sin Declarar",
+          "garron": "790",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 180,
+          "tipificador": "696",
+          "tipificacion": "B2"
+        },
+        {
+          "caravana": "Sin Declarar",
+          "garron": "791",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 203,
+          "tipificador": "696",
+          "tipificacion": "A2"
+        },
+        {
+          "caravana": "Sin Declarar",
+          "garron": "791",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 206,
+          "tipificador": "696",
+          "tipificacion": "A2"
+        },
+        {
+          "caravana": "Sin Declarar",
+          "garron": "792",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 154,
+          "tipificador": "696",
+          "tipificacion": "B2"
+        },
+        {
+          "caravana": "Sin Declarar",
+          "garron": "792",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 148,
+          "tipificador": "696",
+          "tipificacion": "B2"
+        },
+        {
+          "caravana": "Sin Declarar",
+          "garron": "794",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 156,
+          "tipificador": "696",
+          "tipificacion": "B2"
+        },
+        {
+          "caravana": "Sin Declarar",
+          "garron": "794",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 154,
+          "tipificador": "696",
+          "tipificacion": "B2"
+        },
+        {
+          "caravana": "Sin Declarar",
+          "garron": "795",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 195,
+          "tipificador": "696",
+          "tipificacion": "B2"
+        },
+        {
+          "caravana": "Sin Declarar",
+          "garron": "795",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 187,
+          "tipificador": "696",
+          "tipificacion": "B2"
+        },
+        {
+          "caravana": "Sin Declarar",
+          "garron": "796",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 161,
+          "tipificador": "696",
+          "tipificacion": "A2"
+        },
+        {
+          "caravana": "Sin Declarar",
+          "garron": "796",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 163,
+          "tipificador": "696",
+          "tipificacion": "A2"
+        },
+        {
+          "caravana": "Sin Declarar",
+          "garron": "797",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 175,
+          "tipificador": "696",
+          "tipificacion": "B2"
+        },
+        {
+          "caravana": "Sin Declarar",
+          "garron": "797",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 172,
+          "tipificador": "696",
+          "tipificacion": "B2"
+        },
+        {
+          "caravana": "Sin Declarar",
+          "garron": "798",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 158,
+          "tipificador": "696",
+          "tipificacion": "B2"
+        },
+        {
+          "caravana": "Sin Declarar",
+          "garron": "798",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 149,
+          "tipificador": "696",
+          "tipificacion": "B2"
+        },
+        {
+          "caravana": "Sin Declarar",
+          "garron": "799",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 172,
+          "tipificador": "696",
+          "tipificacion": "B2"
+        },
+        {
+          "caravana": "Sin Declarar",
+          "garron": "799",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 173,
+          "tipificador": "696",
+          "tipificacion": "B2"
+        },
+        {
+          "caravana": "Sin Declarar",
+          "garron": "800",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 161,
+          "tipificador": "696",
+          "tipificacion": "B2"
+        },
+        {
+          "caravana": "Sin Declarar",
+          "garron": "800",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 161,
+          "tipificador": "696",
+          "tipificacion": "B2"
+        },
+        {
+          "caravana": "Sin Declarar",
+          "garron": "801",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 166,
+          "tipificador": "696",
+          "tipificacion": "B2"
+        },
+        {
+          "caravana": "Sin Declarar",
+          "garron": "801",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 163,
+          "tipificador": "696",
+          "tipificacion": "B2"
+        },
+        {
+          "caravana": "Sin Declarar",
+          "garron": "802",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 168,
+          "tipificador": "696",
+          "tipificacion": "B2"
+        },
+        {
+          "caravana": "Sin Declarar",
+          "garron": "802",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 168,
+          "tipificador": "696",
+          "tipificacion": "B2"
+        },
+        {
+          "caravana": "Sin Declarar",
+          "garron": "803",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 133,
+          "tipificador": "696",
+          "tipificacion": "B2"
+        },
+        {
+          "caravana": "Sin Declarar",
+          "garron": "803",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 135,
+          "tipificador": "696",
+          "tipificacion": "B2"
+        },
+        {
+          "caravana": "Sin Declarar",
+          "garron": "804",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 164,
+          "tipificador": "696",
+          "tipificacion": "B2"
+        },
+        {
+          "caravana": "Sin Declarar",
+          "garron": "804",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 165,
+          "tipificador": "696",
+          "tipificacion": "B2"
+        },
+        {
+          "caravana": "Sin Declarar",
+          "garron": "805",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 141,
+          "tipificador": "696",
+          "tipificacion": "B2"
+        },
+        {
+          "caravana": "Sin Declarar",
+          "garron": "805",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 141,
+          "tipificador": "696",
+          "tipificacion": "B2"
+        },
+        {
+          "caravana": "Sin Declarar",
+          "garron": "806",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 124,
+          "tipificador": "696",
+          "tipificacion": "B2"
+        },
+        {
+          "caravana": "Sin Declarar",
+          "garron": "806",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 124,
+          "tipificador": "696",
+          "tipificacion": "B2"
+        },
+        {
+          "caravana": "Sin Declarar",
+          "garron": "807",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 178,
+          "tipificador": "696",
+          "tipificacion": "B2"
+        },
+        {
+          "caravana": "Sin Declarar",
+          "garron": "807",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 179,
+          "tipificador": "696",
+          "tipificacion": "B2"
+        },
+        {
+          "caravana": "Sin Declarar",
+          "garron": "808",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 160,
+          "tipificador": "696",
+          "tipificacion": "B2"
+        },
+        {
+          "caravana": "Sin Declarar",
+          "garron": "808",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "8D - VA",
+          "kg": 159,
+          "tipificador": "696",
+          "tipificacion": "B2"
+        }
+      ],
+      "creado": "2026-09-25T16:40:05.933Z"
     }
   ],
   "frigorificosCustom": [
-    "Catter Meat"
+    "Catter Meat",
+    "Bernal"
   ]
 }
