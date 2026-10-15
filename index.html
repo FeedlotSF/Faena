@@ -662,12 +662,44 @@ const TIPIFICACION = {
   'D':  { letra:'D', valor: 0, texto:'Conformación deficiente o res sin terminación adecuada (magra). El grado comercial más bajo.' }
 };
 
+// Interpreta cualquier código de tipificación: letra (A-D) + número opcional (A1, A2, A3... A5, B1... B4, etc.)
+function parseTipif(codigo){
+  const c = (codigo || '').trim().toUpperCase();
+  const m = c.match(/^([ABCD])\s*([0-9]+)?$/);
+  if(!m) return null;
+  return { letra: m[1], sub: m[2] ? parseInt(m[2],10) : null };
+}
+
+// Código "canónico": el frigorífico puede agregar sub-grados (A3, A4, A5, B3...).
+// Regla: sub-grado 1 es un escalón; del 2 en adelante comparten el mismo escalón. D no tiene escalones.
+//   A1 | A2+ (A2..A5) | A (sin número)  — igual para B y C.
+function canonTipif(codigo){
+  const p = parseTipif(codigo);
+  if(!p) return null;
+  if(p.letra === 'D') return 'D';
+  if(p.sub === null) return p.letra;
+  return p.letra + (p.sub === 1 ? '1' : '2');
+}
+
 function getTipifInfo(codigo){
   if(!codigo) return { letra:'?', valor:0, texto:'Sin dato de tipificación.' };
   const c = codigo.trim().toUpperCase();
   if(TIPIFICACION[c]) return TIPIFICACION[c];
-  const letra = c.charAt(0);
-  return { letra, valor:2, texto:'Grado ' + c + '.' };
+  const canon = canonTipif(c);
+  if(canon && TIPIFICACION[canon]){
+    const base = TIPIFICACION[canon];
+    return { letra: base.letra, valor: base.valor, texto: 'Grado ' + c + ': se trata igual que ' + canon + '. ' + base.texto };
+  }
+  return { letra: c.charAt(0), valor:0, texto:'Código de tipificación no reconocido (' + c + ').', desconocido:true };
+}
+
+// Para ordenar códigos de mejor a peor (A1, A2, A3.. , A, B1, B2.., B, C.., D)
+function ordenTipifCmp(a, b){
+  const pa = parseTipif(a), pb = parseTipif(b);
+  if(!pa || !pb) return (pa ? -1 : 0) - (pb ? -1 : 0) || String(a).localeCompare(String(b));
+  if(pa.letra !== pb.letra) return pa.letra.localeCompare(pb.letra);
+  const sa = pa.sub === null ? 99 : pa.sub, sb = pb.sub === null ? 99 : pb.sub;
+  return sa - sb;
 }
 
 function getClasifInfo(categoriaRaw){
@@ -1047,10 +1079,16 @@ function calcularStatsVenta(venta){
   };
 }
 
-// Puntos por grado de tipificación (por sub-grado real del certificado).
-// La separación A↔B es amplia a propósito: entrar en "A" debe pesar mucho más
-// que "B". A1 = máxima calidad, D = mínima.
+// Puntos por escalón de tipificación. Los sub-grados que agregan los frigoríficos (A3, A4, A5, B3, B4...)
+// NO inventan escalones nuevos: todo sub-grado >= 2 puntúa igual que el 2 de su letra.
+//   A: A1=100 · A2..A5=96 · A=92      B: B1=76 · B2..B5=70 · B=70
+//   C: C1=44 · C2..C5=36 · C=36       D = 0
+// Un código que no se puede interpretar NO suma 0: se excluye del promedio (y se avisa).
 const PUNTOS_TIPIF = { A1:100, A2:96, A:92, B1:76, B2:70, B:70, C1:44, C2:36, C:36, D:0 };
+function puntosTipif(codigo){
+  const canon = canonTipif(codigo);
+  return canon ? PUNTOS_TIPIF[canon] : null;
+}
 
 function clampPuntaje(v){ return Math.max(0, Math.min(100, v)); }
 
@@ -1058,8 +1096,9 @@ function clampPuntaje(v){ return Math.max(0, Math.min(100, v)); }
 function puntajeTipificacion(stats){
   let n = 0, total = 0;
   Object.entries(stats.distTipif || {}).forEach(([k,cnt])=>{
-    const pts = PUNTOS_TIPIF[(k || '').toUpperCase()];
-    total += cnt * (pts === undefined ? 0 : pts);
+    const pts = puntosTipif(k);
+    if(pts === null) return; // sin dato / no interpretable: no penaliza ni cuenta
+    total += cnt * pts;
     n += cnt;
   });
   return n ? total/n : 0;
@@ -1251,7 +1290,7 @@ function renderResumen(ventas){
 
     <div class="grid grid-charts">
       <div class="card">
-        <div class="card-head"><div><h3>Evolución del índice de calidad</h3><p class="muted small">Cada punto = una venta. Clic en la leyenda para mostrar/ocultar frigoríficos — la tendencia se ajusta sola.</p></div></div>
+        <div class="card-head"><div><h3>Evolución del índice de calidad</h3><p class="muted small">Cada punto = una venta: tocalo para abrir su detalle. Los triángulos huecos son ventas de vacas (otra escala, no comparables con novillos). Clic en la leyenda para mostrar/ocultar frigoríficos — la tendencia se ajusta sola.</p></div></div>
         <div class="chart-box tall" style="height:320px;"><canvas id="chartEvolCalidad"></canvas></div>
       </div>
       <div class="card">
@@ -1294,16 +1333,22 @@ function renderResumen(ventas){
   const datasetsEvol = [];
   let colorIdx = 0;
   const puntosParaTendencia = [];
+  const puntosVacas = [];
   frigoMap.forEach((items, frigo)=>{
     const color = COLORES_FRIGO[colorIdx % COLORES_FRIGO.length];
     colorIdx++;
-    const puntos = items.map(x=>{
+    // Las ventas de vacas van aparte (otra escala): no entran en la serie del frigorífico ni en la tendencia
+    items.filter(x=> esVentaDeVacas(x.stats)).forEach(x=>{
+      puntosVacas.push({ x: new Date(x.venta.fecha).getTime(), y: calcularIndiceTotal(x.stats).puntaje,
+        _venta: x.venta, _stats: x.stats, _esVaca: true, _color: color });
+    });
+    const puntos = items.filter(x=> !esVentaDeVacas(x.stats)).map(x=>{
       const d = new Date(x.venta.fecha);
       const indice = calcularIndiceTotal(x.stats).puntaje;
       puntosParaTendencia.push({ x: d.getTime(), y: indice });
       return { x: d.getTime(), y: indice, _venta: x.venta, _stats: x.stats };
     });
-    datasetsEvol.push({
+    if(puntos.length) datasetsEvol.push({
       label: frigo,
       data: puntos,
       backgroundColor: color,
@@ -1315,6 +1360,23 @@ function renderResumen(ventas){
       pointBorderColor: '#FAF7F0'
     });
   });
+
+  // Ventas de vacas: triángulos huecos con el color de su frigorífico. Otra categoría, otro rinde y otra
+  // tipificación típica: no se comparan con novillos ni mueven la tendencia.
+  if(puntosVacas.length){
+    datasetsEvol.push({
+      label: '🐄 Vacas (otra escala, no comparable con novillos)',
+      data: puntosVacas,
+      _esVacas: true,
+      pointStyle: 'triangle',
+      pointRadius: 7,
+      pointHoverRadius: 10,
+      backgroundColor: puntosVacas.map(p=> p._color + '33'),
+      borderColor: puntosVacas.map(p=> p._color),
+      pointBorderColor: puntosVacas.map(p=> p._color),
+      pointBorderWidth: 2
+    });
+  }
 
   // línea de tendencia suavizada (media gaussiana local sobre los puntos visibles)
   function curvaSuavizada(puntos){
@@ -1367,6 +1429,18 @@ function renderResumen(ventas){
     options: {
       responsive: true, maintainAspectRatio: false,
       interaction: { mode: 'nearest', intersect: true },
+      onClick: function(evt, els, chart){
+        if(!els || !els.length) return;
+        const raw = chart.data.datasets[els[0].datasetIndex].data[els[0].index];
+        if(raw && raw._venta) abrirDetalleVenta(raw._venta.id);
+      },
+      onHover: function(evt, els){
+        const c = evt.native && evt.native.target;
+        if(!c) return;
+        const sobreVenta = els && els.length && els[0].element && els[0].element.$context &&
+          els[0].element.$context.raw && els[0].element.$context.raw._venta;
+        c.style.cursor = sobreVenta ? 'pointer' : 'default';
+      },
       scales: {
         x: {
           type: 'linear',
@@ -1431,7 +1505,7 @@ function renderResumen(ventas){
             // recalcular la curva solo con los puntos visibles
             const visibles = [];
             chart.data.datasets.forEach((d, di)=>{
-              if(di === indiceTendencia || d.hidden) return;
+              if(di === indiceTendencia || d.hidden || d._esVacas) return;
               (d.data || []).forEach(p=> visibles.push({ x: p.x, y: p.y }));
             });
             if(indiceTendencia >= 0 && chart.data.datasets[indiceTendencia]){
@@ -1459,7 +1533,8 @@ function renderResumen(ventas){
               return [
                 'Índice: ' + indice.toFixed(0) + '/100',
                 s.nAnimales + ' animales · ' + fmtKg(s.kgTotalRes),
-                v.dte ? 'DTE: ' + v.dte : ''
+                v.dte ? 'DTE: ' + v.dte : '',
+                raw._esVaca ? '🐄 Venta de vacas: rinde y tipifica distinto que un novillo, no es comparable' : ''
               ].filter(Boolean);
             }
           }
@@ -1476,24 +1551,30 @@ function renderResumen(ventas){
       distTipifGlobal[key] = (distTipifGlobal[key]||0) + c;
     });
   });
+  // se agrupa por escalón (A3..A5 -> A2, B3..B5 -> B2, C3.. -> C2) para que ningún código quede afuera
+  const distCanon = {};
+  Object.entries(distTipifGlobal).forEach(([k,c])=>{
+    const key = canonTipif(k) || k;
+    distCanon[key] = (distCanon[key]||0) + c;
+  });
   const GRUPOS_TIPIF_DONA = [
     { keys:['A1'], label:'A1 — máxima calidad', color:'#1F3D14' },
-    { keys:['A2','A3'], label:'A2 — muy buena', color:'#3A5C2E' },
+    { keys:['A2'], label:'A2 a A5 — muy buena', color:'#3A5C2E' },
     { keys:['A'],  label:'A — buena', color:'#4C5B3D' },
     { keys:['B1'], label:'B1 — estándar alta', color:'#9A6B24' },
     { keys:['B'],  label:'B — estándar', color:'#B8863B' },
-    { keys:['B2','B3','B4'], label:'B2 — estándar', color:'#C99B4A' },
+    { keys:['B2'], label:'B2 en adelante — estándar', color:'#C99B4A' },
     { keys:['C1','C2','C'], label:'C — por debajo del estándar', color:'#8C2F1E' },
     { keys:['D'],  label:'D — deficiente', color:'#6E2317' }
   ];
   const slicesDonut = [];
   GRUPOS_TIPIF_DONA.forEach(g=>{
     let cnt = 0;
-    g.keys.forEach(k=>{ cnt += distTipifGlobal[k] || 0; });
+    g.keys.forEach(k=>{ cnt += distCanon[k] || 0; });
     if(cnt > 0) slicesDonut.push({ label:g.label, value:cnt, color:g.color });
   });
   const clavesConocidas = new Set(GRUPOS_TIPIF_DONA.flatMap(g=>g.keys));
-  const otrosDonut = Object.entries(distTipifGlobal)
+  const otrosDonut = Object.entries(distCanon)
     .filter(([k])=> !clavesConocidas.has(k))
     .reduce((s,[,c])=> s+c, 0);
   if(otrosDonut > 0) slicesDonut.push({ label:'Otros', value:otrosDonut, color:'#8A8377' });
@@ -1938,8 +2019,7 @@ function volverAListaVentas(){
 
 function renderGraficosDetalle(stats){
   // tipificación (barras horizontales, orden de calidad)
-  const labelsOrdenados = ORDEN_TIPIF.filter(k=> stats.distTipif[k]);
-  Object.keys(stats.distTipif).forEach(k=>{ if(!labelsOrdenados.includes(k)) labelsOrdenados.push(k); });
+  const labelsOrdenados = Object.keys(stats.distTipif).sort(ordenTipifCmp);
   const ctx1 = document.getElementById('chartDetTipif');
   chartInstances['detTipif'] = new Chart(ctx1, {
     type:'bar',
@@ -2437,7 +2517,7 @@ function renderGlosario(){
       <p class="muted small mb16">Es <strong>un único número</strong>, igual en todas las secciones (Resumen general, Ventas y Comparar) — así un mismo viaje siempre muestra el mismo valor. Se combinan 4 señales de cada certificado; si falta el peso de jaula, el índice se rearma sin rendimiento.</p>
       <div class="gloss-item">
         <h4>1) Tipificación — 70% a 82% del índice</h4>
-        <p class="muted small">Cada media res suma puntos por su sub-grado real del certificado, <strong>no solo por la letra</strong>: A1=100, A2=96, A=92, B1=76, B2=70, B=70, C1=44, C2=36, C=36, D=0. El promedio pesado por cantidad de media reses da el puntaje base. La distancia entre A y B es amplia a propósito: subir una tropa de B a A vale mucho más que desplazarse dentro de B.</p>
+        <p class="muted small">Cada media res suma puntos por su sub-grado real del certificado, <strong>no solo por la letra</strong>: A1=100, A2=96, A=92, B1=76, B2=70, B=70, C1=44, C2=36, C=36, D=0. Si el frigorífico agrega sub-grados (A3, A4, A5, B3, B4…), todos puntúan igual que el 2 de su letra (A2–A5 = 96, B2–B5 = 70, C2–C5 = 36), así un código nuevo nunca cuenta como 0. El promedio pesado por cantidad de media reses da el puntaje base. La distancia entre A y B es amplia a propósito: subir una tropa de B a A vale mucho más que desplazarse dentro de B.</p>
       </div>
       <div class="gloss-item">
         <h4>2) Homogeneidad de tropa — 7-8%</h4>
