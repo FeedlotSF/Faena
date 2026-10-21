@@ -1,6 +1,6 @@
 {
   "formato": "romaneo_feedlot_datos_v1",
-  "actualizado": "2026-10-15T15:33:57.011Z",
+  "actualizado": "2026-10-21T14:13:53.050Z",
   "ventas": [
     {
       "id": "v_1789386883744_216ssy",
@@ -63207,10 +63207,1515 @@
         }
       ],
       "creado": "2026-10-15T15:20:47.675Z"
+    },
+    {
+      "id": "v_1792592032340_hantlw",
+      "fecha": "2026-10-16",
+      "frigorifico": "Santa Giulia S A",
+      "dte": "032785066-0",
+      "nroTropa": "17032",
+      "pesoJaula": 21060,
+      "cabezasJaula": 37,
+      "filas": [
+        {
+          "caravana": "032010013136523",
+          "garron": "0239",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "2D - NT",
+          "kg": 149,
+          "tipificador": "",
+          "tipificacion": "B2"
+        },
+        {
+          "caravana": "032010013136523",
+          "garron": "0239",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "2D - NT",
+          "kg": 153,
+          "tipificador": "",
+          "tipificacion": "B2"
+        },
+        {
+          "caravana": "032010013136533",
+          "garron": "0240",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "2D - NT",
+          "kg": 168,
+          "tipificador": "",
+          "tipificacion": "B2"
+        },
+        {
+          "caravana": "032010013136533",
+          "garron": "0240",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "2D - NT",
+          "kg": 161,
+          "tipificador": "",
+          "tipificacion": "B2"
+        },
+        {
+          "caravana": "032010013136543",
+          "garron": "0241",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "2D - NT",
+          "kg": 172,
+          "tipificador": "",
+          "tipificacion": "B2"
+        },
+        {
+          "caravana": "032010013136543",
+          "garron": "0241",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "2D - NT",
+          "kg": 171,
+          "tipificador": "",
+          "tipificacion": "B2"
+        },
+        {
+          "caravana": "032010013136537",
+          "garron": "0242",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "2D - NT",
+          "kg": 161,
+          "tipificador": "",
+          "tipificacion": "B2"
+        },
+        {
+          "caravana": "032010013136537",
+          "garron": "0242",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "2D - NT",
+          "kg": 159,
+          "tipificador": "",
+          "tipificacion": "B2"
+        },
+        {
+          "caravana": "032010013136519",
+          "garron": "0243",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "4D - NT",
+          "kg": 155,
+          "tipificador": "",
+          "tipificacion": "B2"
+        },
+        {
+          "caravana": "032010013136519",
+          "garron": "0243",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "4D - NT",
+          "kg": 153,
+          "tipificador": "",
+          "tipificacion": "B2"
+        },
+        {
+          "caravana": "032010013136513",
+          "garron": "0244",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "2D - NT",
+          "kg": 155,
+          "tipificador": "",
+          "tipificacion": "B2"
+        },
+        {
+          "caravana": "032010013136513",
+          "garron": "0244",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "2D - NT",
+          "kg": 153,
+          "tipificador": "",
+          "tipificacion": "B2"
+        },
+        {
+          "caravana": "032010013136548",
+          "garron": "0245",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "2D - NT",
+          "kg": 169,
+          "tipificador": "",
+          "tipificacion": "B2"
+        },
+        {
+          "caravana": "032010013136548",
+          "garron": "0245",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "2D - NT",
+          "kg": 169,
+          "tipificador": "",
+          "tipificacion": "B2"
+        },
+        {
+          "caravana": "032010013136540",
+          "garron": "0246",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "2D - NT",
+          "kg": 182,
+          "tipificador": "",
+          "tipificacion": "B2"
+        },
+        {
+          "caravana": "032010013136540",
+          "garron": "0246",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "2D - NT",
+          "kg": 181,
+          "tipificador": "",
+          "tipificacion": "B2"
+        },
+        {
+          "caravana": "032010013136532",
+          "garron": "0247",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "2D - NT",
+          "kg": 171,
+          "tipificador": "",
+          "tipificacion": "C2"
+        },
+        {
+          "caravana": "032010013136532",
+          "garron": "0247",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "2D - NT",
+          "kg": 175,
+          "tipificador": "",
+          "tipificacion": "C2"
+        },
+        {
+          "caravana": "032010013136522",
+          "garron": "0248",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "2D - NT",
+          "kg": 161,
+          "tipificador": "",
+          "tipificacion": "B2"
+        },
+        {
+          "caravana": "032010013136522",
+          "garron": "0248",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "2D - NT",
+          "kg": 160,
+          "tipificador": "",
+          "tipificacion": "B2"
+        },
+        {
+          "caravana": "032010013136516",
+          "garron": "0249",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "2D - NT",
+          "kg": 170,
+          "tipificador": "",
+          "tipificacion": "B2"
+        },
+        {
+          "caravana": "032010013136516",
+          "garron": "0249",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "2D - NT",
+          "kg": 173,
+          "tipificador": "",
+          "tipificacion": "B2"
+        },
+        {
+          "caravana": "032010013136544",
+          "garron": "0250",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "2D - NT",
+          "kg": 176,
+          "tipificador": "",
+          "tipificacion": "A2"
+        },
+        {
+          "caravana": "032010013136544",
+          "garron": "0250",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "2D - NT",
+          "kg": 168,
+          "tipificador": "",
+          "tipificacion": "A2"
+        },
+        {
+          "caravana": "032010013136526",
+          "garron": "0251",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "2D - NT",
+          "kg": 152,
+          "tipificador": "",
+          "tipificacion": "B2"
+        },
+        {
+          "caravana": "032010013136526",
+          "garron": "0251",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "2D - NT",
+          "kg": 153,
+          "tipificador": "",
+          "tipificacion": "B2"
+        },
+        {
+          "caravana": "032010013136518",
+          "garron": "0252",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "2D - NT",
+          "kg": 165,
+          "tipificador": "",
+          "tipificacion": "B2"
+        },
+        {
+          "caravana": "032010013136518",
+          "garron": "0252",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "2D - NT",
+          "kg": 167,
+          "tipificador": "",
+          "tipificacion": "B2"
+        },
+        {
+          "caravana": "032010013136514",
+          "garron": "0253",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "2D - NT",
+          "kg": 158,
+          "tipificador": "",
+          "tipificacion": "B2"
+        },
+        {
+          "caravana": "032010013136514",
+          "garron": "0253",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "2D - NT",
+          "kg": 159,
+          "tipificador": "",
+          "tipificacion": "B2"
+        },
+        {
+          "caravana": "032010013136536",
+          "garron": "0254",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "2D - NT",
+          "kg": 152,
+          "tipificador": "",
+          "tipificacion": "C2"
+        },
+        {
+          "caravana": "032010013136536",
+          "garron": "0254",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "2D - NT",
+          "kg": 151,
+          "tipificador": "",
+          "tipificacion": "C2"
+        },
+        {
+          "caravana": "032010013136549",
+          "garron": "0255",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "4D - NT",
+          "kg": 176,
+          "tipificador": "",
+          "tipificacion": "B3"
+        },
+        {
+          "caravana": "032010013136549",
+          "garron": "0255",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "4D - NT",
+          "kg": 174,
+          "tipificador": "",
+          "tipificacion": "B3"
+        },
+        {
+          "caravana": "032010013136539",
+          "garron": "0256",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "2D - NT",
+          "kg": 170,
+          "tipificador": "",
+          "tipificacion": "B2"
+        },
+        {
+          "caravana": "032010013136539",
+          "garron": "0256",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "2D - NT",
+          "kg": 167,
+          "tipificador": "",
+          "tipificacion": "B2"
+        },
+        {
+          "caravana": "032010013136529",
+          "garron": "0257",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "2D - NT",
+          "kg": 161,
+          "tipificador": "",
+          "tipificacion": "C2"
+        },
+        {
+          "caravana": "032010013136529",
+          "garron": "0257",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "2D - NT",
+          "kg": 158,
+          "tipificador": "",
+          "tipificacion": "C2"
+        },
+        {
+          "caravana": "032010013136515",
+          "garron": "0258",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "2D - NT",
+          "kg": 187,
+          "tipificador": "",
+          "tipificacion": "C2"
+        },
+        {
+          "caravana": "032010013136515",
+          "garron": "0258",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "2D - NT",
+          "kg": 185,
+          "tipificador": "",
+          "tipificacion": "C2"
+        },
+        {
+          "caravana": "032010013136527",
+          "garron": "0259",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "2D - NT",
+          "kg": 161,
+          "tipificador": "",
+          "tipificacion": "B2"
+        },
+        {
+          "caravana": "032010013136527",
+          "garron": "0259",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "2D - NT",
+          "kg": 158,
+          "tipificador": "",
+          "tipificacion": "B2"
+        },
+        {
+          "caravana": "032010013136547",
+          "garron": "0260",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "2D - NT",
+          "kg": 163,
+          "tipificador": "",
+          "tipificacion": "B2"
+        },
+        {
+          "caravana": "032010013136547",
+          "garron": "0260",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "2D - NT",
+          "kg": 160,
+          "tipificador": "",
+          "tipificacion": "B2"
+        },
+        {
+          "caravana": "032010013136531",
+          "garron": "0261",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "2D - NT",
+          "kg": 150,
+          "tipificador": "",
+          "tipificacion": "B2"
+        },
+        {
+          "caravana": "032010013136531",
+          "garron": "0261",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "2D - NT",
+          "kg": 149,
+          "tipificador": "",
+          "tipificacion": "B2"
+        },
+        {
+          "caravana": "032010013136521",
+          "garron": "0262",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "2D - NT",
+          "kg": 167,
+          "tipificador": "",
+          "tipificacion": "B2"
+        },
+        {
+          "caravana": "032010013136521",
+          "garron": "0262",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "2D - NT",
+          "kg": 166,
+          "tipificador": "",
+          "tipificacion": "B2"
+        },
+        {
+          "caravana": "032010013136535",
+          "garron": "0263",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "2D - NT",
+          "kg": 158,
+          "tipificador": "",
+          "tipificacion": "B2"
+        },
+        {
+          "caravana": "032010013136535",
+          "garron": "0263",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "2D - NT",
+          "kg": 157,
+          "tipificador": "",
+          "tipificacion": "B2"
+        },
+        {
+          "caravana": "032010013136545",
+          "garron": "0264",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "2D - NT",
+          "kg": 175,
+          "tipificador": "",
+          "tipificacion": "B2"
+        },
+        {
+          "caravana": "032010013136545",
+          "garron": "0264",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "2D - NT",
+          "kg": 174,
+          "tipificador": "",
+          "tipificacion": "B2"
+        },
+        {
+          "caravana": "032010013136542",
+          "garron": "0265",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "2D - NT",
+          "kg": 161,
+          "tipificador": "",
+          "tipificacion": "B2"
+        },
+        {
+          "caravana": "032010013136542",
+          "garron": "0265",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "2D - NT",
+          "kg": 160,
+          "tipificador": "",
+          "tipificacion": "B2"
+        },
+        {
+          "caravana": "032010013136528",
+          "garron": "0266",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "2D - NT",
+          "kg": 171,
+          "tipificador": "",
+          "tipificacion": "B2"
+        },
+        {
+          "caravana": "032010013136528",
+          "garron": "0266",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "2D - NT",
+          "kg": 168,
+          "tipificador": "",
+          "tipificacion": "B2"
+        },
+        {
+          "caravana": "032010013136520",
+          "garron": "0267",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "2D - NT",
+          "kg": 162,
+          "tipificador": "",
+          "tipificacion": "B3"
+        },
+        {
+          "caravana": "032010013136520",
+          "garron": "0267",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "2D - NT",
+          "kg": 163,
+          "tipificador": "",
+          "tipificacion": "B3"
+        },
+        {
+          "caravana": "032010013136538",
+          "garron": "0268",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "2D - NT",
+          "kg": 159,
+          "tipificador": "",
+          "tipificacion": "C2"
+        },
+        {
+          "caravana": "032010013136538",
+          "garron": "0268",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "2D - NT",
+          "kg": 154,
+          "tipificador": "",
+          "tipificacion": "C2"
+        },
+        {
+          "caravana": "032010013136546",
+          "garron": "0269",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "2D - NT",
+          "kg": 165,
+          "tipificador": "",
+          "tipificacion": "C2"
+        },
+        {
+          "caravana": "032010013136546",
+          "garron": "0269",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "2D - NT",
+          "kg": 169,
+          "tipificador": "",
+          "tipificacion": "C2"
+        },
+        {
+          "caravana": "032010013136524",
+          "garron": "0270",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "4D - NT",
+          "kg": 178,
+          "tipificador": "",
+          "tipificacion": "C2"
+        },
+        {
+          "caravana": "032010013136524",
+          "garron": "0270",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "4D - NT",
+          "kg": 177,
+          "tipificador": "",
+          "tipificacion": "C2"
+        },
+        {
+          "caravana": "032010013136534",
+          "garron": "0271",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "2D - NT",
+          "kg": 162,
+          "tipificador": "",
+          "tipificacion": "B2"
+        },
+        {
+          "caravana": "032010013136534",
+          "garron": "0271",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "2D - NT",
+          "kg": 158,
+          "tipificador": "",
+          "tipificacion": "B2"
+        },
+        {
+          "caravana": "032010013136517",
+          "garron": "0272",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "2D - NT",
+          "kg": 169,
+          "tipificador": "",
+          "tipificacion": "C2"
+        },
+        {
+          "caravana": "032010013136517",
+          "garron": "0272",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "2D - NT",
+          "kg": 163,
+          "tipificador": "",
+          "tipificacion": "C2"
+        },
+        {
+          "caravana": "032010013136525",
+          "garron": "0273",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "2D - NT",
+          "kg": 170,
+          "tipificador": "",
+          "tipificacion": "B3"
+        },
+        {
+          "caravana": "032010013136525",
+          "garron": "0273",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "2D - NT",
+          "kg": 166,
+          "tipificador": "",
+          "tipificacion": "B3"
+        },
+        {
+          "caravana": "032010013136541",
+          "garron": "0274",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "2D - NT",
+          "kg": 153,
+          "tipificador": "",
+          "tipificacion": "B2"
+        },
+        {
+          "caravana": "032010013136541",
+          "garron": "0274",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "2D - NT",
+          "kg": 147,
+          "tipificador": "",
+          "tipificacion": "B2"
+        },
+        {
+          "caravana": "032010013136530",
+          "garron": "0275",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "2D - NT",
+          "kg": 164,
+          "tipificador": "",
+          "tipificacion": "B2"
+        },
+        {
+          "caravana": "032010013136530",
+          "garron": "0275",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "2D - NT",
+          "kg": 160,
+          "tipificador": "",
+          "tipificacion": "B2"
+        }
+      ],
+      "creado": "2026-10-21T14:13:52.340Z"
+    },
+    {
+      "id": "v_1792592032340_9m2djr",
+      "fecha": "2026-10-16",
+      "frigorifico": "Santa Giulia S A",
+      "dte": "032785201-9",
+      "nroTropa": "17033",
+      "pesoJaula": 20740,
+      "cabezasJaula": 37,
+      "filas": [
+        {
+          "caravana": "032010013135958",
+          "garron": "0276",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "2D - NT",
+          "kg": 163,
+          "tipificador": "",
+          "tipificacion": "C2"
+        },
+        {
+          "caravana": "032010013135958",
+          "garron": "0276",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "2D - NT",
+          "kg": 161,
+          "tipificador": "",
+          "tipificacion": "C2"
+        },
+        {
+          "caravana": "032010013135972",
+          "garron": "0277",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "2D - NT",
+          "kg": 160,
+          "tipificador": "",
+          "tipificacion": "B2"
+        },
+        {
+          "caravana": "032010013135972",
+          "garron": "0277",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "2D - NT",
+          "kg": 156,
+          "tipificador": "",
+          "tipificacion": "B2"
+        },
+        {
+          "caravana": "032010013135984",
+          "garron": "0278",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "2D - NT",
+          "kg": 184,
+          "tipificador": "",
+          "tipificacion": "B2"
+        },
+        {
+          "caravana": "032010013135984",
+          "garron": "0278",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "2D - NT",
+          "kg": 185,
+          "tipificador": "",
+          "tipificacion": "B2"
+        },
+        {
+          "caravana": "032010013135966",
+          "garron": "0279",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "2D - NT",
+          "kg": 170,
+          "tipificador": "",
+          "tipificacion": "A2"
+        },
+        {
+          "caravana": "032010013135966",
+          "garron": "0279",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "2D - NT",
+          "kg": 170,
+          "tipificador": "",
+          "tipificacion": "A2"
+        },
+        {
+          "caravana": "032010013135954",
+          "garron": "0280",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "2D - NT",
+          "kg": 156,
+          "tipificador": "",
+          "tipificacion": "B2"
+        },
+        {
+          "caravana": "032010013135954",
+          "garron": "0280",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "2D - NT",
+          "kg": 153,
+          "tipificador": "",
+          "tipificacion": "B2"
+        },
+        {
+          "caravana": "032010013135978",
+          "garron": "0281",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "2D - NT",
+          "kg": 155,
+          "tipificador": "",
+          "tipificacion": "B2"
+        },
+        {
+          "caravana": "032010013135978",
+          "garron": "0281",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "2D - NT",
+          "kg": 159,
+          "tipificador": "",
+          "tipificacion": "B2"
+        },
+        {
+          "caravana": "032010013135968",
+          "garron": "0282",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "2D - NT",
+          "kg": 162,
+          "tipificador": "",
+          "tipificacion": "B2"
+        },
+        {
+          "caravana": "032010013135968",
+          "garron": "0282",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "2D - NT",
+          "kg": 164,
+          "tipificador": "",
+          "tipificacion": "B2"
+        },
+        {
+          "caravana": "032010013135960",
+          "garron": "0283",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "2D - NT",
+          "kg": 162,
+          "tipificador": "",
+          "tipificacion": "B2"
+        },
+        {
+          "caravana": "032010013135960",
+          "garron": "0283",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "2D - NT",
+          "kg": 163,
+          "tipificador": "",
+          "tipificacion": "B2"
+        },
+        {
+          "caravana": "032010013135988",
+          "garron": "0284",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "2D - NT",
+          "kg": 167,
+          "tipificador": "",
+          "tipificacion": "C2"
+        },
+        {
+          "caravana": "032010013135988",
+          "garron": "0284",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "2D - NT",
+          "kg": 164,
+          "tipificador": "",
+          "tipificacion": "C2"
+        },
+        {
+          "caravana": "032010013135987",
+          "garron": "0285",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "2D - NT",
+          "kg": 184,
+          "tipificador": "",
+          "tipificacion": "C2"
+        },
+        {
+          "caravana": "032010013135987",
+          "garron": "0285",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "2D - NT",
+          "kg": 184,
+          "tipificador": "",
+          "tipificacion": "C2"
+        },
+        {
+          "caravana": "032010013135979",
+          "garron": "0286",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "2D - NT",
+          "kg": 168,
+          "tipificador": "",
+          "tipificacion": "B2"
+        },
+        {
+          "caravana": "032010013135979",
+          "garron": "0286",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "2D - NT",
+          "kg": 166,
+          "tipificador": "",
+          "tipificacion": "B2"
+        },
+        {
+          "caravana": "032010013135971",
+          "garron": "0287",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "2D - NT",
+          "kg": 140,
+          "tipificador": "",
+          "tipificacion": "C2"
+        },
+        {
+          "caravana": "032010013135971",
+          "garron": "0287",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "2D - NT",
+          "kg": 136,
+          "tipificador": "",
+          "tipificacion": "C2"
+        },
+        {
+          "caravana": "032010013135963",
+          "garron": "0288",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "2D - NT",
+          "kg": 152,
+          "tipificador": "",
+          "tipificacion": "C2"
+        },
+        {
+          "caravana": "032010013135963",
+          "garron": "0288",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "2D - NT",
+          "kg": 153,
+          "tipificador": "",
+          "tipificacion": "C2"
+        },
+        {
+          "caravana": "032010013135983",
+          "garron": "0289",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "2D - NT",
+          "kg": 181,
+          "tipificador": "",
+          "tipificacion": "B2"
+        },
+        {
+          "caravana": "032010013135983",
+          "garron": "0289",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "2D - NT",
+          "kg": 183,
+          "tipificador": "",
+          "tipificacion": "B2"
+        },
+        {
+          "caravana": "032010013135953",
+          "garron": "0290",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "2D - NT",
+          "kg": 168,
+          "tipificador": "",
+          "tipificacion": "B2"
+        },
+        {
+          "caravana": "032010013135953",
+          "garron": "0290",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "2D - NT",
+          "kg": 165,
+          "tipificador": "",
+          "tipificacion": "B2"
+        },
+        {
+          "caravana": "032010013135959",
+          "garron": "0291",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "2D - NT",
+          "kg": 160,
+          "tipificador": "",
+          "tipificacion": "B2"
+        },
+        {
+          "caravana": "032010013135959",
+          "garron": "0291",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "2D - NT",
+          "kg": 159,
+          "tipificador": "",
+          "tipificacion": "B2"
+        },
+        {
+          "caravana": "032010013135975",
+          "garron": "0292",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "2D - NT",
+          "kg": 150,
+          "tipificador": "",
+          "tipificacion": "B2"
+        },
+        {
+          "caravana": "032010013135975",
+          "garron": "0292",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "2D - NT",
+          "kg": 147,
+          "tipificador": "",
+          "tipificacion": "B2"
+        },
+        {
+          "caravana": "032010013135985",
+          "garron": "0293",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "2D - NT",
+          "kg": 172,
+          "tipificador": "",
+          "tipificacion": "A2"
+        },
+        {
+          "caravana": "032010013135985",
+          "garron": "0293",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "2D - NT",
+          "kg": 170,
+          "tipificador": "",
+          "tipificacion": "A2"
+        },
+        {
+          "caravana": "032010013135967",
+          "garron": "0294",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "2D - NT",
+          "kg": 145,
+          "tipificador": "",
+          "tipificacion": "A2"
+        },
+        {
+          "caravana": "032010013135967",
+          "garron": "0294",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "2D - NT",
+          "kg": 147,
+          "tipificador": "",
+          "tipificacion": "A2"
+        },
+        {
+          "caravana": "032010013135957",
+          "garron": "0295",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "2D - NT",
+          "kg": 180,
+          "tipificador": "",
+          "tipificacion": "B2"
+        },
+        {
+          "caravana": "032010013135957",
+          "garron": "0295",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "2D - NT",
+          "kg": 177,
+          "tipificador": "",
+          "tipificacion": "B2"
+        },
+        {
+          "caravana": "032010013135980",
+          "garron": "0296",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "2D - NT",
+          "kg": 170,
+          "tipificador": "",
+          "tipificacion": "B2"
+        },
+        {
+          "caravana": "032010013135980",
+          "garron": "0296",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "2D - NT",
+          "kg": 165,
+          "tipificador": "",
+          "tipificacion": "B2"
+        },
+        {
+          "caravana": "032010013135962",
+          "garron": "0297",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "2D - NT",
+          "kg": 166,
+          "tipificador": "",
+          "tipificacion": "B2"
+        },
+        {
+          "caravana": "032010013135962",
+          "garron": "0297",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "2D - NT",
+          "kg": 166,
+          "tipificador": "",
+          "tipificacion": "B2"
+        },
+        {
+          "caravana": "032010013135956",
+          "garron": "0298",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "2D - NT",
+          "kg": 161,
+          "tipificador": "",
+          "tipificacion": "B2"
+        },
+        {
+          "caravana": "032010013135956",
+          "garron": "0298",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "2D - NT",
+          "kg": 157,
+          "tipificador": "",
+          "tipificacion": "B2"
+        },
+        {
+          "caravana": "032010013135976",
+          "garron": "0299",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "2D - NT",
+          "kg": 157,
+          "tipificador": "",
+          "tipificacion": "B2"
+        },
+        {
+          "caravana": "032010013135976",
+          "garron": "0299",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "2D - NT",
+          "kg": 156,
+          "tipificador": "",
+          "tipificacion": "B2"
+        },
+        {
+          "caravana": "032010013135952",
+          "garron": "0300",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "2D - NT",
+          "kg": 159,
+          "tipificador": "",
+          "tipificacion": "B2"
+        },
+        {
+          "caravana": "032010013135952",
+          "garron": "0300",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "2D - NT",
+          "kg": 156,
+          "tipificador": "",
+          "tipificacion": "B2"
+        },
+        {
+          "caravana": "032010013135982",
+          "garron": "0301",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "2D - NT",
+          "kg": 145,
+          "tipificador": "",
+          "tipificacion": "B2"
+        },
+        {
+          "caravana": "032010013135982",
+          "garron": "0301",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "2D - NT",
+          "kg": 143,
+          "tipificador": "",
+          "tipificacion": "B2"
+        },
+        {
+          "caravana": "032010013135964",
+          "garron": "0302",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "2D - NT",
+          "kg": 176,
+          "tipificador": "",
+          "tipificacion": "A2"
+        },
+        {
+          "caravana": "032010013135964",
+          "garron": "0302",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "2D - NT",
+          "kg": 171,
+          "tipificador": "",
+          "tipificacion": "A2"
+        },
+        {
+          "caravana": "032010013135986",
+          "garron": "0303",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "2D - NT",
+          "kg": 182,
+          "tipificador": "",
+          "tipificacion": "B2"
+        },
+        {
+          "caravana": "032010013135986",
+          "garron": "0303",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "2D - NT",
+          "kg": 180,
+          "tipificador": "",
+          "tipificacion": "B2"
+        },
+        {
+          "caravana": "032010013135981",
+          "garron": "0304",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "2D - NT",
+          "kg": 162,
+          "tipificador": "",
+          "tipificacion": "B2"
+        },
+        {
+          "caravana": "032010013135981",
+          "garron": "0304",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "2D - NT",
+          "kg": 163,
+          "tipificador": "",
+          "tipificacion": "B2"
+        },
+        {
+          "caravana": "032010013135973",
+          "garron": "0305",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "2D - NT",
+          "kg": 163,
+          "tipificador": "",
+          "tipificacion": "B2"
+        },
+        {
+          "caravana": "032010013135973",
+          "garron": "0305",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "2D - NT",
+          "kg": 168,
+          "tipificador": "",
+          "tipificacion": "B2"
+        },
+        {
+          "caravana": "032010013135961",
+          "garron": "0306",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "2D - NT",
+          "kg": 144,
+          "tipificador": "",
+          "tipificacion": "B2"
+        },
+        {
+          "caravana": "032010013135961",
+          "garron": "0306",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "2D - NT",
+          "kg": 148,
+          "tipificador": "",
+          "tipificacion": "B2"
+        },
+        {
+          "caravana": "",
+          "garron": "0307",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "2D - NT",
+          "kg": 180,
+          "tipificador": "",
+          "tipificacion": "B2"
+        },
+        {
+          "caravana": "",
+          "garron": "0307",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "2D - NT",
+          "kg": 176,
+          "tipificador": "",
+          "tipificacion": "B2"
+        },
+        {
+          "caravana": "032010013135970",
+          "garron": "0308",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "2D - NT",
+          "kg": 158,
+          "tipificador": "",
+          "tipificacion": "B2"
+        },
+        {
+          "caravana": "032010013135970",
+          "garron": "0308",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "2D - NT",
+          "kg": 156,
+          "tipificador": "",
+          "tipificacion": "B2"
+        },
+        {
+          "caravana": "032010013135969",
+          "garron": "0309",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "2D - NT",
+          "kg": 149,
+          "tipificador": "",
+          "tipificacion": "B2"
+        },
+        {
+          "caravana": "032010013135969",
+          "garron": "0309",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "2D - NT",
+          "kg": 146,
+          "tipificador": "",
+          "tipificacion": "B2"
+        },
+        {
+          "caravana": "032010013135977",
+          "garron": "0310",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "2D - NT",
+          "kg": 166,
+          "tipificador": "",
+          "tipificacion": "B2"
+        },
+        {
+          "caravana": "032010013135977",
+          "garron": "0310",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "2D - NT",
+          "kg": 158,
+          "tipificador": "",
+          "tipificacion": "B2"
+        },
+        {
+          "caravana": "032010013135965",
+          "garron": "0311",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "2D - NT",
+          "kg": 154,
+          "tipificador": "",
+          "tipificacion": "B3"
+        },
+        {
+          "caravana": "032010013135965",
+          "garron": "0311",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "2D - NT",
+          "kg": 151,
+          "tipificador": "",
+          "tipificacion": "B3"
+        },
+        {
+          "caravana": "032010013135955",
+          "garron": "0312",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "2D - NT",
+          "kg": 160,
+          "tipificador": "",
+          "tipificacion": "B2"
+        },
+        {
+          "caravana": "032010013135955",
+          "garron": "0312",
+          "contusion": "0",
+          "valorCorte": "1/2 Res",
+          "categoria": "2D - NT",
+          "kg": 160,
+          "tipificador": "",
+          "tipificacion": "B2"
+        }
+      ],
+      "creado": "2026-10-21T14:13:52.340Z"
     }
   ],
   "frigorificosCustom": [
     "Catter Meat",
-    "Bernal"
+    "Bernal",
+    "Santa Giulia S A"
   ]
 }
